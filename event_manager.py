@@ -364,37 +364,115 @@ def interactive_mode():
 		
 		elif choice == "2":
 			print("\n➕ Add New Event")
-			print(f"Available colors: {', '.join(VALID_COLORS)}")
-			print()
+			print("(Type 'cancel' at any prompt to return to menu)\n")
 			
-			date = input("Date (YYYY-MM-DD): ").strip()
-			line1 = input("Line 1 (max 10 chars): ").strip()
-			line2 = input("Line 2 (max 10 chars): ").strip()
+			# Date
+			date = None
+			while date is None:
+				date_input = input("Date (YYYY-MM-DD): ").strip()
+				if date_input.lower() == 'cancel':
+					break
+				valid, msg = EventValidator.validate_date(date_input)
+				if valid:
+					date = date_input
+				else:
+					print(f"   ❌ {msg}")
 			
-			# Show available images
+			if not date:
+				continue
+			
+			# Line 1
+			line1 = None
+			while line1 is None:
+				line1_input = input("Line 1 (max 10 chars): ").strip()
+				if line1_input.lower() == 'cancel':
+					break
+				valid, msg = EventValidator.validate_text(line1_input, "Line 1", max_length=10)
+				if valid:
+					line1 = line1_input
+				else:
+					print(f"   ❌ {msg}")
+			
+			if not line1:
+				continue
+			
+			# Line 2
+			line2 = None
+			while line2 is None:
+				line2_input = input("Line 2 (max 10 chars): ").strip()
+				if line2_input.lower() == 'cancel':
+					break
+				valid, msg = EventValidator.validate_text(line2_input, "Line 2", max_length=10)
+				if valid:
+					line2 = line2_input
+				else:
+					print(f"   ❌ {msg}")
+			
+			if not line2:
+				continue
+			
+			# Image
 			images = EventValidator.get_available_images()
 			if images:
 				print(f"\nAvailable images ({len(images)} files):")
-				for i, img in enumerate(images[:20], 1):  # Show first 20
-					print(f"  {i}. {img}")
-				if len(images) > 20:
-					print(f"  ... and {len(images) - 20} more")
-				print("\nType image name or number:")
+				for i, img in enumerate(images[:15], 1):
+					print(f"  {i:2d}. {img}")
+				if len(images) > 15:
+					print(f"  ... and {len(images) - 15} more")
+				print("Type number, name, or 'list' for all images\n")
 			
-			img_input = input("Image: ").strip()
-			
-			# Handle number or name
-			try:
-				img_index = int(img_input) - 1
-				if 0 <= img_index < len(images):
-					image = images[img_index]
-				else:
+			image = None
+			while image is None:
+				img_input = input("Image: ").strip()
+				
+				if img_input.lower() == 'cancel':
+					break
+				
+				if img_input.lower() == 'list' and images:
+					print("\n📋 Complete image list:")
+					for i, img in enumerate(images, 1):
+						print(f"  {i:2d}. {img}")
+					print()
+					continue
+				
+				# Try as number
+				try:
+					img_index = int(img_input) - 1
+					if 0 <= img_index < len(images):
+						img_input = images[img_index]
+				except ValueError:
+					pass
+				
+				# Validate
+				valid, msg = EventValidator.validate_image(img_input)
+				if valid:
 					image = img_input
-			except ValueError:
-				image = img_input
+				else:
+					print(f"   ❌ {msg}")
 			
-			color = input("Color (default: MINT): ").strip() or "MINT"
+			if not image:
+				continue
 			
+			# Color
+			print(f"\nAvailable colors: {', '.join(VALID_COLORS)}")
+			color = None
+			while color is None:
+				color_input = input("Color (default: MINT): ").strip() or "MINT"
+				
+				if color_input.lower() == 'cancel':
+					break
+				
+				valid, msg = EventValidator.validate_color(color_input)
+				if valid:
+					color = color_input.upper()
+				else:
+					print(f"   ❌ {msg}")
+					print(f"   Valid: {', '.join(VALID_COLORS)}")
+			
+			if not color:
+				continue
+			
+			# Add event (should always succeed)
 			manager.add_event(date, line1, line2, image, color)
 		
 		elif choice == "3":
