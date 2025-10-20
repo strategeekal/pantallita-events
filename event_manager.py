@@ -306,6 +306,223 @@ class EventManager:
 		except FileNotFoundError:
 			print("❌ Git not found. Install git or push manually")
 			return False
+			
+	def review_and_edit(self):
+		"""Review events before pushing, with option to edit"""
+		if not self.events:
+			print("No events to review.")
+			return False
+		
+		# Separate past and future events
+		today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+		past_events = []
+		future_events = []
+		
+		for i, event in enumerate(self.events):
+			try:
+				event_date = datetime.strptime(event[0], '%Y-%m-%d')
+				if event_date < today:
+					past_events.append((i, event))
+				else:
+					future_events.append((i, event))
+			except:
+				future_events.append((i, event))
+		
+		print("\n" + "="*80)
+		print("📋 REVIEW EVENTS BEFORE PUSHING")
+		print("="*80)
+		
+		if future_events:
+			print(f"\n✅ FUTURE EVENTS ({len(future_events)} will be imported by Pantallita):")
+			print("-" * 80)
+			for i, event in future_events:
+				date, line1, line2, image, color = event
+				print(f"{i:2d}. {date} | {line1:10s} {line2:10s} | {image:20s} | {color}")
+		
+		if past_events:
+			print(f"\n⏳ PAST EVENTS ({len(past_events)} will be skipped by Pantallita):")
+			print("-" * 80)
+			for i, event in past_events:
+				date, line1, line2, image, color = event
+				print(f"{i:2d}. {date} | {line1:10s} {line2:10s} | {image:20s} | {color}")
+		
+		print("="*80)
+		print(f"\n📊 Summary:")
+		print(f"   Total events: {len(self.events)}")
+		print(f"   Future events (will import): {len(future_events)}")
+		print(f"   Past events (will skip): {len(past_events)}")
+		
+		# Ask what to do
+		while True:
+			print("\n🔧 Options:")
+			print("  1. Looks good - proceed with push")
+			print("  2. Edit an event")
+			print("  3. Remove an event")
+			print("  4. Remove all past events")
+			print("  5. Cancel - go back to main menu")
+			
+			choice = input("\nChoose option (1-5): ").strip()
+			
+			if choice == "1":
+				return True  # Proceed with push
+			
+			elif choice == "2":
+				# Edit event
+				try:
+					event_num = int(input("\nEnter event number to edit: "))
+					if 0 <= event_num < len(self.events):
+						self.edit_event(event_num)
+						# Show updated list
+						return self.review_and_edit()  # Recursive call to show updates
+					else:
+						print("❌ Invalid event number")
+				except ValueError:
+					print("❌ Invalid number")
+			
+			elif choice == "3":
+				# Remove event
+				try:
+					event_num = int(input("\nEnter event number to remove: "))
+					self.remove_event(event_num)
+					# Show updated list
+					return self.review_and_edit()  # Recursive call to show updates
+				except ValueError:
+					print("❌ Invalid number")
+			
+			elif choice == "4":
+				# Remove all past events
+				if past_events:
+					confirm = input(f"\n⚠️  Remove all {len(past_events)} past events? (y/n): ").strip().lower()
+					if confirm == 'y':
+						self.cleanup_past_events()
+						return self.review_and_edit()  # Show updated list
+				else:
+					print("ℹ️  No past events to remove")
+			
+			elif choice == "5":
+				return False  # Cancel push
+			
+			else:
+				print("❌ Invalid choice")
+	
+	def edit_event(self, index):
+		"""Edit an existing event"""
+		if not (0 <= index < len(self.events)):
+			print("❌ Invalid event index")
+			return False
+		
+		old_event = self.events[index]
+		print(f"\n✏️  Editing event: {old_event[0]} - {old_event[1]} {old_event[2]}")
+		print("Press Enter to keep current value, or type new value\n")
+		
+		# Date
+		date = None
+		while date is None:
+			current = old_event[0]
+			date_input = input(f"Date [{current}]: ").strip() or current
+			if date_input.lower() == 'cancel':
+				print("Edit cancelled")
+				return False
+			valid, msg = EventValidator.validate_date(date_input)
+			if valid:
+				date = date_input
+			else:
+				print(f"   ❌ {msg}")
+		
+		# Line 1
+		line1 = None
+		while line1 is None:
+			current = old_event[1]
+			line1_input = input(f"Line 1 [{current}]: ").strip() or current
+			if line1_input.lower() == 'cancel':
+				print("Edit cancelled")
+				return False
+			valid, msg = EventValidator.validate_text(line1_input, "Line 1", max_length=10)
+			if valid:
+				line1 = line1_input
+			else:
+				print(f"   ❌ {msg}")
+		
+		# Line 2
+		line2 = None
+		while line2 is None:
+			current = old_event[2]
+			line2_input = input(f"Line 2 [{current}]: ").strip() or current
+			if line2_input.lower() == 'cancel':
+				print("Edit cancelled")
+				return False
+			valid, msg = EventValidator.validate_text(line2_input, "Line 2", max_length=10)
+			if valid:
+				line2 = line2_input
+			else:
+				print(f"   ❌ {msg}")
+		
+		# Image
+		images = EventValidator.get_available_images()
+		image = None
+		while image is None:
+			current = old_event[3]
+			print(f"\n(Type 'list' to see all images)")
+			img_input = input(f"Image [{current}]: ").strip() or current
+			
+			if img_input.lower() == 'cancel':
+				print("Edit cancelled")
+				return False
+			
+			if img_input.lower() == 'list' and images:
+				print("\n📋 Available images:")
+				for i, img in enumerate(images, 1):
+					print(f"  {i:2d}. {img}")
+				print()
+				continue
+			
+			# Try as number
+			try:
+				img_index = int(img_input) - 1
+				if 0 <= img_index < len(images):
+					img_input = images[img_index]
+			except ValueError:
+				pass
+			
+			valid, msg = EventValidator.validate_image(img_input)
+			if valid:
+				image = img_input
+			else:
+				print(f"   ❌ {msg}")
+		
+		# Color
+		print(f"\n🎨 Available colors:")
+		for i, c in enumerate(VALID_COLORS, 1):
+			print(f"  {i:2d}. {c}")
+		
+		color = None
+		while color is None:
+			current = old_event[4]
+			color_input = input(f"\nColor (number or name) [{current}]: ").strip() or current
+			
+			if color_input.lower() == 'cancel':
+				print("Edit cancelled")
+				return False
+			
+			# Try as number
+			try:
+				color_index = int(color_input) - 1
+				if 0 <= color_index < len(VALID_COLORS):
+					color = VALID_COLORS[color_index]
+					continue
+			except ValueError:
+				pass
+			
+			valid, msg = EventValidator.validate_color(color_input)
+			if valid:
+				color = color_input.upper()
+			else:
+				print(f"   ❌ {msg}")
+		
+		# Update event
+		self.events[index] = [date, line1, line2, image, color]
+		print(f"\n✓ Event updated: {date} - {line1} {line2}")
+		return True
 
 
 def show_available_images():
@@ -352,8 +569,8 @@ def interactive_mode():
 		print("4. Show available images")
 		print("5. Validate all events")
 		print("6. Clean up past events")
-		print("7. Save changes")
-		print("8. Save and push to GitHub")
+		print("7. Save changes (local only)")
+		print("8. Review and push to GitHub")  # UPDATED
 		print("9. Exit without saving")
 		print()
 		
@@ -454,20 +671,34 @@ def interactive_mode():
 				continue
 			
 			# Color
-			print(f"\nAvailable colors: {', '.join(VALID_COLORS)}")
+			print(f"\n🎨 Available colors:")
+			for i, c in enumerate(VALID_COLORS, 1):
+				print(f"  {i:2d}. {c}")
+			print("\nType number or color name:")
+			
 			color = None
 			while color is None:
-				color_input = input("Color (default: MINT): ").strip() or "MINT"
+				color_input = input("Color (default: 1=MINT): ").strip() or "1"
 				
 				if color_input.lower() == 'cancel':
 					break
 				
+				# Try as number first
+				try:
+					color_index = int(color_input) - 1
+					if 0 <= color_index < len(VALID_COLORS):
+						color = VALID_COLORS[color_index]
+						continue
+				except ValueError:
+					pass
+				
+				# Try as color name
 				valid, msg = EventValidator.validate_color(color_input)
 				if valid:
 					color = color_input.upper()
 				else:
 					print(f"   ❌ {msg}")
-					print(f"   Valid: {', '.join(VALID_COLORS)}")
+					print(f"   Enter a number (1-{len(VALID_COLORS)}) or color name")
 			
 			if not color:
 				continue
@@ -499,13 +730,24 @@ def interactive_mode():
 			print("💡 Run option 8 to push to GitHub")
 		
 		elif choice == "8":
-			if manager.validate_all():
+			# Review before pushing
+			if not manager.events:
+				print("❌ No events to push")
+				continue
+			
+			if not manager.validate_all():
+				print("\n❌ Fix validation errors before pushing")
+				continue
+			
+			# Show review
+			if manager.review_and_edit():
+				# User approved, save and push
 				manager.save()
 				if manager.git_push():
 					print("\n✅ All done! Events are live on GitHub")
 					break
 			else:
-				print("\n❌ Fix validation errors before pushing")
+				print("\n↩️  Push cancelled - returning to main menu")
 		
 		elif choice == "9":
 			confirm = input("Exit without saving? (y/n): ").strip().lower()
