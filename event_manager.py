@@ -55,7 +55,7 @@ class EventValidator:
 			return False, "Invalid date"
 	
 	@staticmethod
-	def validate_text(text, field_name, max_length=10):
+	def validate_text(text, field_name, max_length=12):
 		"""Validate text fields"""
 		if not text or not text.strip():
 			return False, f"{field_name} cannot be empty"
@@ -100,11 +100,11 @@ class EventValidator:
 		if not valid:
 			errors.append(f"Date: {msg}")
 		
-		valid, msg = cls.validate_text(line1, "Line 1", max_length=10)
+		valid, msg = cls.validate_text(line1, "Line 1", max_length=12)
 		if not valid:
 			errors.append(msg)
 		
-		valid, msg = cls.validate_text(line2, "Line 2", max_length=10)
+		valid, msg = cls.validate_text(line2, "Line 2", max_length=12)
 		if not valid:
 			errors.append(msg)
 		
@@ -197,14 +197,14 @@ class EventManager:
 			print("-" * 80)
 			for i, event in future_events:
 				date, line1, line2, image, color = event
-				print(f"{i:2d}. {date} | {line1:10s} {line2:10s} | {image:20s} | {color}")
+				print(f"{i:2d}. {date} | {line1:12s} {line2:12s} | {image:20s} | {color}")
 		
 		if past_events:
 			print("\n📜 PAST EVENTS (will be skipped):")
 			print("-" * 80)
 			for i, event in past_events:
 				date, line1, line2, image, color = event
-				print(f"{i:2d}. {date} | {line1:10s} {line2:10s} | {image:20s} | {color}")
+				print(f"{i:2d}. {date} | {line1:12s} {line2:12s} | {image:20s} | {color}")
 		
 		print("=" * 80)
 		print(f"Total: {len(self.events)} events ({len(future_events)} future, {len(past_events)} past)\n")
@@ -337,14 +337,14 @@ class EventManager:
 			print("-" * 80)
 			for i, event in future_events:
 				date, line1, line2, image, color = event
-				print(f"{i:2d}. {date} | {line1:10s} {line2:10s} | {image:20s} | {color}")
+				print(f"{i:2d}. {date} | {line1:12s} {line2:12s} | {image:20s} | {color}")
 		
 		if past_events:
 			print(f"\n⏳ PAST EVENTS ({len(past_events)} will be skipped by Pantallita):")
 			print("-" * 80)
 			for i, event in past_events:
 				date, line1, line2, image, color = event
-				print(f"{i:2d}. {date} | {line1:10s} {line2:10s} | {image:20s} | {color}")
+				print(f"{i:2d}. {date} | {line1:12s} {line2:12s} | {image:20s} | {color}")
 		
 		print("="*80)
 		print(f"\n📊 Summary:")
@@ -437,7 +437,7 @@ class EventManager:
 			if line1_input.lower() == 'cancel':
 				print("Edit cancelled")
 				return False
-			valid, msg = EventValidator.validate_text(line1_input, "Line 1", max_length=10)
+			valid, msg = EventValidator.validate_text(line1_input, "Line 1", max_length=12)
 			if valid:
 				line1 = line1_input
 			else:
@@ -451,7 +451,7 @@ class EventManager:
 			if line2_input.lower() == 'cancel':
 				print("Edit cancelled")
 				return False
-			valid, msg = EventValidator.validate_text(line2_input, "Line 2", max_length=10)
+			valid, msg = EventValidator.validate_text(line2_input, "Line 2", max_length=12)
 			if valid:
 				line2 = line2_input
 			else:
@@ -601,10 +601,10 @@ def interactive_mode():
 			# Line 1
 			line1 = None
 			while line1 is None:
-				line1_input = input("Line 1 (max 10 chars): ").strip()
+				line1_input = input("Line 1 (max 12 chars): ").strip()
 				if line1_input.lower() == 'cancel':
 					break
-				valid, msg = EventValidator.validate_text(line1_input, "Line 1", max_length=10)
+				valid, msg = EventValidator.validate_text(line1_input, "Line 1", max_length=12)
 				if valid:
 					line1 = line1_input
 				else:
@@ -616,10 +616,10 @@ def interactive_mode():
 			# Line 2
 			line2 = None
 			while line2 is None:
-				line2_input = input("Line 2 (max 10 chars): ").strip()
+				line2_input = input("Line 2 (max 12 chars): ").strip()
 				if line2_input.lower() == 'cancel':
 					break
-				valid, msg = EventValidator.validate_text(line2_input, "Line 2", max_length=10)
+				valid, msg = EventValidator.validate_text(line2_input, "Line 2", max_length=12)
 				if valid:
 					line2 = line2_input
 				else:
