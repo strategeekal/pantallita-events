@@ -307,6 +307,30 @@ class EventManager:
 			print("❌ Git not found. Install git or push manually")
 			return False
 			
+	def git_pull(self):
+		"""Pull latest changes from GitHub"""
+		try:
+			print("\n📥 Pulling latest from GitHub...")
+			result = subprocess.run(['git', 'pull'], capture_output=True, text=True, cwd='.')
+			
+			if result.returncode == 0:
+				print("✓ Successfully pulled from GitHub!")
+				if "Already up to date" in result.stdout:
+					print("  (No changes - already up to date)")
+				else:
+					print(f"  {result.stdout.strip()}")
+				return True
+			else:
+				print(f"❌ Pull failed: {result.stderr}")
+				return False
+				
+		except subprocess.CalledProcessError as e:
+			print(f"❌ Git error: {e}")
+			return False
+		except FileNotFoundError:
+			print("❌ Git not found")
+			return False
+			
 	def review_and_edit(self):
 		"""Review events before pushing, with option to edit"""
 		if not self.events:
@@ -557,29 +581,57 @@ def interactive_mode():
 		print("="*80)
 		input("\nPress Enter to continue anyway...")
 	
-	manager = EventManager()
+	# Auto-pull latest changes from GitHub on startup
+	print("\n📥 Checking for updates from GitHub...")
+	try:
+		result = subprocess.run(['git', 'pull'], capture_output=True, text=True, timeout=10)
+		if result.returncode == 0:
+			if "Already up to date" in result.stdout:
+				print("✓ Already up to date")
+			else:
+				print("✓ Pulled latest changes from GitHub")
+				print(f"  {result.stdout.strip()}")
+		else:
+			print("⚠️  Could not pull from GitHub (using local version)")
+	except subprocess.TimeoutExpired:
+		print("⚠️  Git pull timeout (using local version)")
+	except Exception as e:
+		print(f"⚠️  Git pull error: {e} (using local version)")
+	
+	# CRITICAL: Create manager BEFORE while loop
+	manager = EventManager()  # ← Make sure this line is HERE, before while loop
 	
 	while True:
 		print("\n" + "="*80)
 		print("🎨 PANTALLITA EVENT MANAGER")
 		print("="*80)
-		print("1. List all events")
-		print("2. Add new event")
-		print("3. Remove event")
-		print("4. Show available images")
-		print("5. Validate all events")
-		print("6. Clean up past events")
-		print("7. Save changes (local only)")
-		print("8. Review and push to GitHub")  # UPDATED
-		print("9. Exit without saving")
+		print("1. Pull latest from GitHub")
+		print("2. List all events")
+		print("3. Add new event")
+		print("4. Remove event")
+		print("5. Show available images")
+		print("6. Validate all events")
+		print("7. Clean up past events")
+		print("8. Save changes (local only)")
+		print("9. Review and push to GitHub")
+		print("0. Exit without saving")
 		print()
 		
-		choice = input("Choose an option (1-9): ").strip()
+		choice = input("Choose an option (0-9): ").strip()
 		
 		if choice == "1":
-			manager.list_events()
+			# Pull from GitHub
+			if manager.git_pull():
+				print("\n✓ Reloading events from updated file...")
+				manager = EventManager()  # Reload from disk
+			else:
+				print("\n❌ Pull failed - continuing with current data")
 		
 		elif choice == "2":
+			# List events
+			manager.list_events()
+		
+		elif choice == "3":
 			print("\n➕ Add New Event")
 			print("(Type 'cancel' at any prompt to return to menu)\n")
 			
@@ -706,7 +758,7 @@ def interactive_mode():
 			# Add event (should always succeed)
 			manager.add_event(date, line1, line2, image, color)
 		
-		elif choice == "3":
+		elif choice == "4":
 			manager.list_events()
 			try:
 				index = int(input("Enter event number to remove: "))
@@ -714,22 +766,22 @@ def interactive_mode():
 			except ValueError:
 				print("❌ Invalid number")
 		
-		elif choice == "4":
+		elif choice == "5":
 			show_available_images()
 		
-		elif choice == "5":
+		elif choice == "6":
 			manager.validate_all()
 		
-		elif choice == "6":
+		elif choice == "7":
 			if manager.cleanup_past_events():
 				print("Run option 7 or 8 to save changes")
 		
-		elif choice == "7":
+		elif choice == "8":
 			manager.save()
 			print("\n✓ Changes saved locally")
 			print("💡 Run option 8 to push to GitHub")
 		
-		elif choice == "8":
+		elif choice == "9":
 			# Review before pushing
 			if not manager.events:
 				print("❌ No events to push")
@@ -749,7 +801,7 @@ def interactive_mode():
 			else:
 				print("\n↩️  Push cancelled - returning to main menu")
 		
-		elif choice == "9":
+		elif choice == "0":
 			confirm = input("Exit without saving? (y/n): ").strip().lower()
 			if confirm == 'y':
 				print("Exiting without saving.")
