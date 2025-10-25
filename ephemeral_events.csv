@@ -1,14 +1,17 @@
-# Ephemeral Events - Auto-generated
-"# Date,Line1,Line2,Image,Color"
-2025-10-25,Jack,Fiesta,party.bmp,YELLOW
-2025-10-31,Abuelos,Hola,plane.bmp,BLUE
-2025-11-02,Tiago,Fiesta,party.bmp,PURPLE
-2025-11-09,Allie,Fiesta,party.bmp,PINK
-2025-11-10,Viaje,Buen,plane.bmp,BLUE
-2025-11-15,Nico Coshi,Fiesta,party.bmp,AQUA
-2025-11-27,Thanksgiving,Happy,thanksgiving.bmp,ORANGE
-2025-12-21,Winter,Hello,winter.bmp,RED
-2026-03-20,Spring,Hello,spring.bmp,PINK
-2026-06-21,Summer,Hello,summer.bmp,MINT
-2026-09-22,Begins,Fall,fall.bmp,ORANGE
-2026-11-26,Thanksgiving,Happy,thanksgiving.bmp,ORANGE
+# Ephemeral Events - Format: YYYY-MM-DD,TopLine,BottomLine,Image,Color[,StartHour,EndHour]
+# TopLine = displays on TOP of screen
+# BottomLine = displays on BOTTOM (usually the name/subject)
+# Times are optional (24-hour format, 0-23). If omitted, event shows all day.
+
+2025-10-25,Fiesta,Jack,party.bmp,YELLOW,5,13
+2025-10-31,Hola,Abuelos,plane.bmp,BLUE
+2025-11-02,Fiesta,Tiago,party.bmp,PURPLE
+2025-11-09,Fiesta,Allie,party.bmp,PINK
+2025-11-10,Buen,Viaje,plane.bmp,BLUE,0,17
+2025-11-15,Fiesta,Nico Coshi,party.bmp,AQUA,5,18
+2025-11-27,Happy,Thanksgiving,thanksgiving.bmp,ORANGE
+2025-12-21,Hello,Winter,winter.bmp,RED
+2026-03-20,Hello,Spring,spring.bmp,PINK
+2026-06-21,Hello,Summer,summer.bmp,MINT
+2026-09-22,Fall,Begins,fall.bmp,ORANGE
+2026-11-26,Happy,Thanksgiving,thanksgiving.bmp,ORANGE
