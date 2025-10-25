@@ -1,8 +1,8 @@
 # Ephemeral Events - Auto-generated
-"# Format: YYYY-MM-DD,TopLine,BottomLine,Image,Color[,StartHour,EndHour]"
+# Format: YYYY-MM-DD,TopLine,BottomLine,Image,Color[,StartHour,EndHour]
 # TopLine = displays on TOP of screen
 # BottomLine = displays on BOTTOM (usually the name)
-"# Times are optional (24-hour format, 0-23). If omitted, event shows all day."
+# Times are optional (24-hour format, 0-23). If omitted, event shows all day.
 2025-10-25,Fiesta,Jack,party.bmp,YELLOW,4,13
 2025-10-26,Prueba,dos,fall.bmp,LILAC,2,20
 2025-10-31,Hola,Abuelos,plane.bmp,BLUE
@@ -11,6 +11,7 @@
 2025-11-10,Buen,Viaje,plane.bmp,BLUE,0,17
 2025-11-15,Fiesta,Nico Coshi,party.bmp,AQUA,4,18
 2025-11-27,Happy,Thanksgiving,thanksgiving.bmp,ORANGE
+2025-11-27,Prueba,tres,blank_sq.bmp,WHITE
 2025-12-21,Hello,Winter,winter.bmp,RED
 2026-03-20,Hello,Spring,spring.bmp,PINK
 2026-06-21,Hello,Summer,summer.bmp,MINT
