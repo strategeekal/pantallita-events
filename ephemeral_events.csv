@@ -3,8 +3,7 @@
 # TopLine = displays on TOP of screen
 # BottomLine = displays on BOTTOM (usually the name)
 "# Times are optional (24-hour format, 0-23). If omitted, event shows all day."
-2025-10-24,Prueba,uno,mexico_flag_V2.bmp,GREEN,0,4
-2025-10-25,Fiesta,Jack,party.bmp,YELLOW,5,13
+2025-10-25,Fiesta,Jack,party.bmp,YELLOW,4,13
 2025-10-31,Hola,Abuelos,plane.bmp,BLUE
 2025-11-02,Fiesta,Tiago,party.bmp,PURPLE
 2025-11-09,Fiesta,Allie,party.bmp,PINK,5,13
