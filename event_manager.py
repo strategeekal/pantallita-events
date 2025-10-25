@@ -275,16 +275,15 @@ class EventManager:
 		self.events.sort(key=lambda x: x[0])
 		
 		with open(self.filename, 'w', newline='') as f:
+			# Write header comments directly (not through CSV writer)
+			f.write('# Ephemeral Events - Auto-generated\n')
+			f.write('# Format: YYYY-MM-DD,TopLine,BottomLine,Image,Color[,StartHour,EndHour]\n')
+			f.write('# TopLine = displays on TOP of screen\n')
+			f.write('# BottomLine = displays on BOTTOM (usually the name)\n')
+			f.write('# Times are optional (24-hour format, 0-23). If omitted, event shows all day.\n')
+			
+			# Now use CSV writer for actual data
 			writer = csv.writer(f)
-			
-			# Write header comment
-			writer.writerow(['# Ephemeral Events - Auto-generated'])
-			writer.writerow(['# Format: YYYY-MM-DD,TopLine,BottomLine,Image,Color[,StartHour,EndHour]'])
-			writer.writerow(['# TopLine = displays on TOP of screen'])
-			writer.writerow(['# BottomLine = displays on BOTTOM (usually the name)'])
-			writer.writerow(['# Times are optional (24-hour format, 0-23). If omitted, event shows all day.'])
-			
-			# Write events
 			for event in self.events:
 				writer.writerow(event)
 		
@@ -381,7 +380,29 @@ class EventManager:
 		"""Pull latest changes from GitHub"""
 		try:
 			print("\n📥 Pulling latest from GitHub...")
-			result = subprocess.run(['git', 'pull'], capture_output=True, text=True, cwd='.')
+			
+			# First, check if we need to configure pull strategy
+			config_check = subprocess.run(
+				['git', 'config', 'pull.rebase'],
+				capture_output=True,
+				text=True
+			)
+			
+			# If not configured, set to merge (safest for this use case)
+			if config_check.returncode != 0:
+				print("  Configuring git pull strategy (merge)...")
+				subprocess.run(
+					['git', 'config', 'pull.rebase', 'false'],
+					capture_output=True
+				)
+			
+			# Now pull with merge strategy
+			result = subprocess.run(
+				['git', 'pull', '--no-rebase'],
+				capture_output=True,
+				text=True,
+				cwd='.'
+			)
 			
 			if result.returncode == 0:
 				print("✓ Successfully pulled from GitHub!")
@@ -391,7 +412,18 @@ class EventManager:
 					print(f"  {result.stdout.strip()}")
 				return True
 			else:
-				print(f"❌ Pull failed: {result.stderr}")
+				# Check if it's a merge conflict
+				if "CONFLICT" in result.stdout or "CONFLICT" in result.stderr:
+					print("❌ Merge conflict detected!")
+					print("\n🔧 To resolve:")
+					print("   1. Open your terminal in the events folder")
+					print("   2. Run: git status")
+					print("   3. Resolve conflicts in ephemeral_events.csv")
+					print("   4. Run: git add ephemeral_events.csv")
+					print("   5. Run: git commit -m 'Resolved conflicts'")
+					print("   6. Then run this tool again")
+				else:
+					print(f"❌ Pull failed: {result.stderr}")
 				return False
 				
 		except subprocess.CalledProcessError as e:
@@ -804,7 +836,29 @@ def interactive_mode():
 	# Auto-pull latest changes from GitHub on startup
 	print("\n📥 Checking for updates from GitHub...")
 	try:
-		result = subprocess.run(['git', 'pull'], capture_output=True, text=True, timeout=10)
+		# Configure pull strategy if needed
+		config_check = subprocess.run(
+			['git', 'config', 'pull.rebase'],
+			capture_output=True,
+			text=True,
+			timeout=5
+		)
+		
+		if config_check.returncode != 0:
+			subprocess.run(
+				['git', 'config', 'pull.rebase', 'false'],
+				capture_output=True,
+				timeout=5
+			)
+		
+		# Pull with merge strategy
+		result = subprocess.run(
+			['git', 'pull', '--no-rebase'],
+			capture_output=True,
+			text=True,
+			timeout=10
+		)
+		
 		if result.returncode == 0:
 			if "Already up to date" in result.stdout:
 				print("✓ Already up to date")
@@ -812,7 +866,10 @@ def interactive_mode():
 				print("✓ Pulled latest changes from GitHub")
 				print(f"  {result.stdout.strip()}")
 		else:
-			print("⚠️  Could not pull from GitHub (using local version)")
+			if "CONFLICT" in result.stdout or "CONFLICT" in result.stderr:
+				print("⚠️  Merge conflict - please resolve manually")
+			else:
+				print("⚠️  Could not pull from GitHub (using local version)")
 	except subprocess.TimeoutExpired:
 		print("⚠️  Git pull timeout (using local version)")
 	except Exception as e:
