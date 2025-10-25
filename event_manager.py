@@ -4,7 +4,6 @@ Pantallita Event Manager
 Creates and validates ephemeral events for your display screens
 Automatically detects available images from local folder
 """
-
 import csv
 import re
 import subprocess
@@ -90,8 +89,20 @@ class EventValidator:
 		
 		return True, "OK"
 	
+	@staticmethod
+	def validate_time(hour_str, field_name):
+		"""Validate hour (0-23)"""
+		try:
+			hour = int(hour_str)
+			if 0 <= hour <= 23:
+				return True, "OK"
+			else:
+				return False, f"{field_name} must be 0-23"
+		except ValueError:
+			return False, f"{field_name} must be a number"
+	
 	@classmethod
-	def validate_event(cls, date, line1, line2, image, color):
+	def validate_event(cls, date, top_line, bottom_line, image, color, start_hour=None, end_hour=None):
 		"""Validate complete event"""
 		errors = []
 		
@@ -100,11 +111,11 @@ class EventValidator:
 		if not valid:
 			errors.append(f"Date: {msg}")
 		
-		valid, msg = cls.validate_text(line1, "Line 1", max_length=12)
+		valid, msg = cls.validate_text(top_line, "Top Line", max_length=12)
 		if not valid:
 			errors.append(msg)
 		
-		valid, msg = cls.validate_text(line2, "Line 2", max_length=12)
+		valid, msg = cls.validate_text(bottom_line, "Bottom Line", max_length=12)
 		if not valid:
 			errors.append(msg)
 		
@@ -115,6 +126,25 @@ class EventValidator:
 		valid, msg = cls.validate_color(color)
 		if not valid:
 			errors.append(msg)
+		
+		# Validate optional time window
+		if start_hour is not None:
+			valid, msg = cls.validate_time(start_hour, "Start hour")
+			if not valid:
+				errors.append(msg)
+		
+		if end_hour is not None:
+			valid, msg = cls.validate_time(end_hour, "End hour")
+			if not valid:
+				errors.append(msg)
+		
+		# Validate time range logic
+		if start_hour is not None and end_hour is not None:
+			try:
+				if int(start_hour) >= int(end_hour):
+					errors.append("Start hour must be before end hour")
+			except ValueError:
+				pass  # Already caught above
 		
 		return len(errors) == 0, errors
 
@@ -141,10 +171,10 @@ class EventManager:
 		
 		print(f"✓ Loaded {len(self.events)} events from {self.filename}")
 	
-	def add_event(self, date, line1, line2, image, color="MINT"):
+	def add_event(self, date, top_line, bottom_line, image, color="MINT", start_hour=None, end_hour=None):
 		"""Add a new event with validation"""
 		# Validate
-		valid, errors = EventValidator.validate_event(date, line1, line2, image, color)
+		valid, errors = EventValidator.validate_event(date, top_line, bottom_line, image, color, start_hour, end_hour)
 		
 		if not valid:
 			print("❌ Validation failed:")
@@ -152,17 +182,26 @@ class EventManager:
 				print(f"   - {error}")
 			return False
 		
-		# Add event
-		event = [date, line1, line2, image, color.upper()]
+		# Build event list
+		event = [date, top_line, bottom_line, image, color.upper()]
+		
+		# Add optional time window
+		if start_hour is not None and end_hour is not None:
+			event.append(str(start_hour))
+			event.append(str(end_hour))
+		
 		self.events.append(event)
-		print(f"✓ Added: {date} - {line1} {line2}")
+		
+		# Show what was added
+		time_info = f" ({start_hour}:00-{end_hour}:00)" if start_hour is not None else " (all day)"
+		print(f"✓ Added: {date} - {top_line} / {bottom_line}{time_info}")
 		return True
 	
 	def remove_event(self, index):
 		"""Remove event by index"""
 		if 0 <= index < len(self.events):
 			removed = self.events.pop(index)
-			print(f"✓ Removed: {removed[0]} - {removed[1]} {removed[2]}")
+			print(f"✓ Removed: {removed[0]} - {removed[1]} / {removed[2]}")
 			return True
 		else:
 			print(f"❌ Invalid index: {index}")
@@ -190,23 +229,44 @@ class EventManager:
 				future_events.append((i, event))  # If can't parse, assume future
 		
 		print("\n📅 Current Events:")
-		print("=" * 80)
+		print("=" * 90)
 		
 		if future_events:
 			print("\n🔮 FUTURE EVENTS (will be imported):")
-			print("-" * 80)
+			print("-" * 90)
 			for i, event in future_events:
-				date, line1, line2, image, color = event
-				print(f"{i:2d}. {date} | {line1:12s} {line2:12s} | {image:20s} | {color}")
+				date = event[0]
+				top_line = event[1]
+				bottom_line = event[2]
+				image = event[3]
+				color = event[4] if len(event) > 4 else "MINT"
+				
+				# Show time window if present
+				if len(event) >= 7:
+					time_str = f" [{event[5]}:00-{event[6]}:00]"
+				else:
+					time_str = " [all day]"
+				
+				print(f"{i:2d}. {date} | {top_line:12s} / {bottom_line:12s} | {image:20s} | {color:10s}{time_str}")
 		
 		if past_events:
 			print("\n📜 PAST EVENTS (will be skipped):")
-			print("-" * 80)
+			print("-" * 90)
 			for i, event in past_events:
-				date, line1, line2, image, color = event
-				print(f"{i:2d}. {date} | {line1:12s} {line2:12s} | {image:20s} | {color}")
+				date = event[0]
+				top_line = event[1]
+				bottom_line = event[2]
+				image = event[3]
+				color = event[4] if len(event) > 4 else "MINT"
+				
+				if len(event) >= 7:
+					time_str = f" [{event[5]}:00-{event[6]}:00]"
+				else:
+					time_str = " [all day]"
+				
+				print(f"{i:2d}. {date} | {top_line:12s} / {bottom_line:12s} | {image:20s} | {color:10s}{time_str}")
 		
-		print("=" * 80)
+		print("=" * 90)
 		print(f"Total: {len(self.events)} events ({len(future_events)} future, {len(past_events)} past)\n")
 	
 	def save(self):
@@ -219,7 +279,10 @@ class EventManager:
 			
 			# Write header comment
 			writer.writerow(['# Ephemeral Events - Auto-generated'])
-			writer.writerow(['# Date,Line1,Line2,Image,Color'])
+			writer.writerow(['# Format: YYYY-MM-DD,TopLine,BottomLine,Image,Color[,StartHour,EndHour]'])
+			writer.writerow(['# TopLine = displays on TOP of screen'])
+			writer.writerow(['# BottomLine = displays on BOTTOM (usually the name)'])
+			writer.writerow(['# Times are optional (24-hour format, 0-23). If omitted, event shows all day.'])
 			
 			# Write events
 			for event in self.events:
@@ -237,8 +300,15 @@ class EventManager:
 				issues.append(f"Event {i}: Incomplete data")
 				continue
 			
-			date, line1, line2, image, color = event[:5]
-			valid, errors = EventValidator.validate_event(date, line1, line2, image, color)
+			date = event[0]
+			top_line = event[1]
+			bottom_line = event[2]
+			image = event[3]
+			color = event[4]
+			start_hour = event[5] if len(event) > 5 else None
+			end_hour = event[6] if len(event) > 6 else None
+			
+			valid, errors = EventValidator.validate_event(date, top_line, bottom_line, image, color, start_hour, end_hour)
 			
 			if not valid:
 				issues.append(f"Event {i} ({date}): {', '.join(errors)}")
@@ -352,25 +422,45 @@ class EventManager:
 			except:
 				future_events.append((i, event))
 		
-		print("\n" + "="*80)
+		print("\n" + "="*90)
 		print("📋 REVIEW EVENTS BEFORE PUSHING")
-		print("="*80)
+		print("="*90)
 		
 		if future_events:
 			print(f"\n✅ FUTURE EVENTS ({len(future_events)} will be imported by Pantallita):")
-			print("-" * 80)
+			print("-" * 90)
 			for i, event in future_events:
-				date, line1, line2, image, color = event
-				print(f"{i:2d}. {date} | {line1:12s} {line2:12s} | {image:20s} | {color}")
+				date = event[0]
+				top_line = event[1]
+				bottom_line = event[2]
+				image = event[3]
+				color = event[4] if len(event) > 4 else "MINT"
+				
+				if len(event) >= 7:
+					time_str = f" [{event[5]}:00-{event[6]}:00]"
+				else:
+					time_str = " [all day]"
+				
+				print(f"{i:2d}. {date} | {top_line:12s} / {bottom_line:12s} | {image:20s} | {color:10s}{time_str}")
 		
 		if past_events:
 			print(f"\n⏳ PAST EVENTS ({len(past_events)} will be skipped by Pantallita):")
-			print("-" * 80)
+			print("-" * 90)
 			for i, event in past_events:
-				date, line1, line2, image, color = event
-				print(f"{i:2d}. {date} | {line1:12s} {line2:12s} | {image:20s} | {color}")
+				date = event[0]
+				top_line = event[1]
+				bottom_line = event[2]
+				image = event[3]
+				color = event[4] if len(event) > 4 else "MINT"
+				
+				if len(event) >= 7:
+					time_str = f" [{event[5]}:00-{event[6]}:00]"
+				else:
+					time_str = " [all day]"
+				
+				print(f"{i:2d}. {date} | {top_line:12s} / {bottom_line:12s} | {image:20s} | {color:10s}{time_str}")
 		
-		print("="*80)
+		print("="*90)
 		print(f"\n📊 Summary:")
 		print(f"   Total events: {len(self.events)}")
 		print(f"   Future events (will import): {len(future_events)}")
@@ -436,7 +526,7 @@ class EventManager:
 			return False
 		
 		old_event = self.events[index]
-		print(f"\n✏️  Editing event: {old_event[0]} - {old_event[1]} {old_event[2]}")
+		print(f"\n✏️  Editing event: {old_event[0]} - {old_event[1]} / {old_event[2]}")
 		print("Press Enter to keep current value, or type new value\n")
 		
 		# Date
@@ -453,31 +543,31 @@ class EventManager:
 			else:
 				print(f"   ❌ {msg}")
 		
-		# Line 1
-		line1 = None
-		while line1 is None:
+		# Top Line
+		top_line = None
+		while top_line is None:
 			current = old_event[1]
-			line1_input = input(f"Line 1 [{current}]: ").strip() or current
-			if line1_input.lower() == 'cancel':
+			line_input = input(f"Top Line [{current}]: ").strip() or current
+			if line_input.lower() == 'cancel':
 				print("Edit cancelled")
 				return False
-			valid, msg = EventValidator.validate_text(line1_input, "Line 1", max_length=12)
+			valid, msg = EventValidator.validate_text(line_input, "Top Line", max_length=12)
 			if valid:
-				line1 = line1_input
+				top_line = line_input
 			else:
 				print(f"   ❌ {msg}")
 		
-		# Line 2
-		line2 = None
-		while line2 is None:
+		# Bottom Line
+		bottom_line = None
+		while bottom_line is None:
 			current = old_event[2]
-			line2_input = input(f"Line 2 [{current}]: ").strip() or current
-			if line2_input.lower() == 'cancel':
+			line_input = input(f"Bottom Line [{current}]: ").strip() or current
+			if line_input.lower() == 'cancel':
 				print("Edit cancelled")
 				return False
-			valid, msg = EventValidator.validate_text(line2_input, "Line 2", max_length=12)
+			valid, msg = EventValidator.validate_text(line_input, "Bottom Line", max_length=12)
 			if valid:
-				line2 = line2_input
+				bottom_line = line_input
 			else:
 				print(f"   ❌ {msg}")
 		
@@ -521,7 +611,7 @@ class EventManager:
 		
 		color = None
 		while color is None:
-			current = old_event[4]
+			current = old_event[4] if len(old_event) > 4 else "MINT"
 			color_input = input(f"\nColor (number or name) [{current}]: ").strip() or current
 			
 			if color_input.lower() == 'cancel':
@@ -543,9 +633,139 @@ class EventManager:
 			else:
 				print(f"   ❌ {msg}")
 		
+		# Time Window (optional)
+		print(f"\n🕐 Time Window (optional)")
+		
+		# Check if event currently has a time window
+		has_time_window = len(old_event) > 6
+		
+		if has_time_window:
+			current_start = old_event[5]
+			current_end = old_event[6]
+			print(f"   Current: {current_start}:00 - {current_end}:00")
+			print(f"\n   Options:")
+			print(f"   1. Keep current time window")
+			print(f"   2. Change to all-day event")
+			print(f"   3. Modify time window")
+			
+			time_choice = input("\n   Choose (1-3, default=1): ").strip() or "1"
+			
+			if time_choice == "1":
+				# Keep existing
+				start_hour = current_start
+				end_hour = current_end
+			elif time_choice == "2":
+				# Remove time window
+				start_hour = None
+				end_hour = None
+				print("   ✓ Changed to all-day event")
+			elif time_choice == "3":
+				# Modify time window
+				start_hour = None
+				end_hour = None
+				
+				while start_hour is None:
+					start_input = input(f"   Start hour (0-23) [{current_start}]: ").strip() or current_start
+					if start_input.lower() == 'cancel':
+						# Keep original
+						start_hour = current_start
+						end_hour = current_end
+						print("   Keeping original time window")
+						break
+					valid, msg = EventValidator.validate_time(start_input, "Start hour")
+					if valid:
+						start_hour = start_input
+					else:
+						print(f"   ❌ {msg}")
+				
+				# Only ask for end hour if start hour was set/changed
+				if start_hour is not None and start_hour != current_start:
+					while end_hour is None:
+						end_input = input(f"   End hour ({int(start_hour)+1}-23) [{current_end}]: ").strip() or current_end
+						if end_input.lower() == 'cancel':
+							start_hour = current_start
+							end_hour = current_end
+							print("   Keeping original time window")
+							break
+						valid, msg = EventValidator.validate_time(end_input, "End hour")
+						if valid:
+							if int(end_input) <= int(start_hour):
+								print("   ❌ End hour must be after start hour")
+								continue
+							end_hour = end_input
+						else:
+							print(f"   ❌ {msg}")
+				elif start_hour == current_start:
+					# Start hour unchanged, ask if they want to change end
+					while end_hour is None:
+						end_input = input(f"   End hour ({int(start_hour)+1}-23) [{current_end}]: ").strip() or current_end
+						if end_input.lower() == 'cancel':
+							end_hour = current_end
+							break
+						valid, msg = EventValidator.validate_time(end_input, "End hour")
+						if valid:
+							if int(end_input) <= int(start_hour):
+								print("   ❌ End hour must be after start hour")
+								continue
+							end_hour = end_input
+						else:
+							print(f"   ❌ {msg}")
+			else:
+				# Invalid choice, keep original
+				print("   Invalid choice - keeping current time window")
+				start_hour = current_start
+				end_hour = current_end
+		else:
+			# No existing time window
+			print(f"   Current: all-day event")
+			
+			time_input = input("\n   Add time window? (y/n, default=n): ").strip().lower()
+			
+			start_hour = None
+			end_hour = None
+			
+			if time_input == 'y':
+				# Get start hour
+				while start_hour is None:
+					start_input = input("   Start hour (0-23, e.g., 8 for 8am): ").strip()
+					if start_input.lower() == 'cancel' or not start_input:
+						print("   Keeping as all-day event")
+						break
+					valid, msg = EventValidator.validate_time(start_input, "Start hour")
+					if valid:
+						start_hour = start_input
+					else:
+						print(f"   ❌ {msg}")
+				
+				# Get end hour (only if start was set)
+				if start_hour is not None:
+					while end_hour is None:
+						end_input = input(f"   End hour ({int(start_hour)+1}-23, e.g., 20 for 8pm): ").strip()
+						if end_input.lower() == 'cancel' or not end_input:
+							start_hour = None  # Reset if cancelled
+							print("   Keeping as all-day event")
+							break
+						valid, msg = EventValidator.validate_time(end_input, "End hour")
+						if valid:
+							end_val = int(end_input)
+							if end_val <= int(start_hour):
+								print("   ❌ End hour must be after start hour")
+								continue
+							end_hour = end_input
+						else:
+							print(f"   ❌ {msg}")
+		
 		# Update event
-		self.events[index] = [date, line1, line2, image, color]
-		print(f"\n✓ Event updated: {date} - {line1} {line2}")
+		new_event = [date, top_line, bottom_line, image, color]
+		if start_hour is not None and end_hour is not None:
+			new_event.append(str(start_hour))
+			new_event.append(str(end_hour))
+			time_info = f" ({start_hour}:00-{end_hour}:00)"
+		else:
+			time_info = " (all day)"
+		
+		self.events[index] = new_event
+		print(f"\n✓ Event updated: {date} - {top_line} / {bottom_line}{time_info}")
 		return True
 
 
@@ -599,7 +819,7 @@ def interactive_mode():
 		print(f"⚠️  Git pull error: {e} (using local version)")
 	
 	# CRITICAL: Create manager BEFORE while loop
-	manager = EventManager()  # ← Make sure this line is HERE, before while loop
+	manager = EventManager()
 	
 	while True:
 		print("\n" + "="*80)
@@ -608,16 +828,17 @@ def interactive_mode():
 		print("1. Pull latest from GitHub")
 		print("2. List all events")
 		print("3. Add new event")
-		print("4. Remove event")
-		print("5. Show available images")
-		print("6. Validate all events")
-		print("7. Clean up past events")
-		print("8. Save changes (local only)")
-		print("9. Review and push to GitHub")
+		print("4. Edit event")              # ← NEW
+		print("5. Remove event")             # ← Was 4
+		print("6. Show available images")    # ← Was 5
+		print("7. Validate all events")      # ← Was 6
+		print("8. Clean up past events")     # ← Was 7
+		print("9. Save changes (local only)") # ← Was 8
+		print("10. Review and push to GitHub") # ← Was 9
 		print("0. Exit without saving")
 		print()
 		
-		choice = input("Choose an option (0-9): ").strip()
+		choice = input("Choose an option (0-10): ").strip()  # ← Change to 0-10
 		
 		if choice == "1":
 			# Pull from GitHub
@@ -650,34 +871,36 @@ def interactive_mode():
 			if not date:
 				continue
 			
-			# Line 1
-			line1 = None
-			while line1 is None:
-				line1_input = input("Line 1 (max 12 chars): ").strip()
-				if line1_input.lower() == 'cancel':
+			# Top Line
+			print("\n💡 Top Line = displays on TOP of screen")
+			top_line = None
+			while top_line is None:
+				line_input = input("Top Line (max 12 chars): ").strip()
+				if line_input.lower() == 'cancel':
 					break
-				valid, msg = EventValidator.validate_text(line1_input, "Line 1", max_length=12)
+				valid, msg = EventValidator.validate_text(line_input, "Top Line", max_length=12)
 				if valid:
-					line1 = line1_input
+					top_line = line_input
 				else:
 					print(f"   ❌ {msg}")
 			
-			if not line1:
+			if not top_line:
 				continue
 			
-			# Line 2
-			line2 = None
-			while line2 is None:
-				line2_input = input("Line 2 (max 12 chars): ").strip()
-				if line2_input.lower() == 'cancel':
+			# Bottom Line
+			print("\n💡 Bottom Line = displays on BOTTOM (usually the name)")
+			bottom_line = None
+			while bottom_line is None:
+				line_input = input("Bottom Line (max 12 chars): ").strip()
+				if line_input.lower() == 'cancel':
 					break
-				valid, msg = EventValidator.validate_text(line2_input, "Line 2", max_length=12)
+				valid, msg = EventValidator.validate_text(line_input, "Bottom Line", max_length=12)
 				if valid:
-					line2 = line2_input
+					bottom_line = line_input
 				else:
 					print(f"   ❌ {msg}")
 			
-			if not line2:
+			if not bottom_line:
 				continue
 			
 			# Image
@@ -755,10 +978,65 @@ def interactive_mode():
 			if not color:
 				continue
 			
-			# Add event (should always succeed)
-			manager.add_event(date, line1, line2, image, color)
+			# Time Window (optional)
+			print(f"\n🕐 Time Window (optional)")
+			print("   Leave blank for all-day event")
+			print("   Or enter hours (0-23) for specific time window")
+			
+			start_hour = None
+			end_hour = None
+			
+			time_input = input("\nAdd time window? (y/n, default=n): ").strip().lower()
+			
+			if time_input == 'y':
+				# Start hour
+				while start_hour is None:
+					start_input = input("Start hour (0-23, e.g., 8 for 8am): ").strip()
+					if start_input.lower() == 'cancel' or not start_input:
+						break
+					valid, msg = EventValidator.validate_time(start_input, "Start hour")
+					if valid:
+						start_hour = int(start_input)
+					else:
+						print(f"   ❌ {msg}")
+				
+				# End hour (only if start was set)
+				if start_hour is not None:
+					while end_hour is None:
+						end_input = input(f"End hour ({start_hour+1}-23, e.g., 20 for 8pm): ").strip()
+						if end_input.lower() == 'cancel' or not end_input:
+							start_hour = None  # Reset if cancelled
+							break
+						valid, msg = EventValidator.validate_time(end_input, "End hour")
+						if valid:
+							end_val = int(end_input)
+							if end_val <= start_hour:
+								print("   ❌ End hour must be after start hour")
+								continue
+							end_hour = end_val
+						else:
+							print(f"   ❌ {msg}")
+			
+			# Add event
+			manager.add_event(date, top_line, bottom_line, image, color, start_hour, end_hour)
 		
 		elif choice == "4":
+			# NEW: Edit event
+			manager.list_events()
+			if not manager.events:
+				print("❌ No events to edit")
+				continue
+			
+			try:
+				index = int(input("\nEnter event number to edit: "))
+				if 0 <= index < len(manager.events):
+					manager.edit_event(index)
+				else:
+					print("❌ Invalid event number")
+			except ValueError:
+				print("❌ Invalid number")
+		
+		elif choice == "5":
 			manager.list_events()
 			try:
 				index = int(input("Enter event number to remove: "))
@@ -766,22 +1044,22 @@ def interactive_mode():
 			except ValueError:
 				print("❌ Invalid number")
 		
-		elif choice == "5":
+		elif choice == "6":
 			show_available_images()
 		
-		elif choice == "6":
+		elif choice == "7":
 			manager.validate_all()
 		
-		elif choice == "7":
-			if manager.cleanup_past_events():
-				print("Run option 7 or 8 to save changes")
-		
 		elif choice == "8":
-			manager.save()
-			print("\n✓ Changes saved locally")
-			print("💡 Run option 8 to push to GitHub")
+			if manager.cleanup_past_events():
+				print("Run option 8 or 9 to save changes")
 		
 		elif choice == "9":
+			manager.save()
+			print("\n✓ Changes saved locally")
+			print("💡 Run option 10 to push to GitHub")
+		
+		elif choice == "10":
 			# Review before pushing
 			if not manager.events:
 				print("❌ No events to push")
