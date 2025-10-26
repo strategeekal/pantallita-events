@@ -7,31 +7,15 @@
 2025-11-02,Fiesta,Tiago,party.bmp,PURPLE
 2025-11-09,Fiesta,Allie,party.bmp,PINK,4,13
 2025-11-10,Buen,Viaje,plane.bmp,BLUE,0,17
-2025-11-15,Fiesta,Nico Coshi,party.bmp,AQUA,4,18
-2025-11-27,Happy,Thanksgiving,thanksgiving.bmp,ORANGE
-2025-12-21,Hello,Winter,winter.bmp,RED
-2026-03-20,Hello,Spring,spring.bmp,PINK
-2026-06-21,Hello,Summer,summer.bmp,MINT
-2026-09-22,Fall,Begins,fall.bmp,ORANGE
-2026-11-26,Happy,Thanksgiving,thanksgiving.bmp,ORANGE
-
-# Guidepost Dates
-2025-08-26,No School,Tomorrow,no_school.bmp,PURPLE,20,23
-2025-08-27,No School,Today,no_school.bmp,PURPLE,5,18
-2025-08-27,No School,Tomorrow,no_school.bmp,PURPLE,20,23
-2025-08-28,No School,Today,no_school.bmp,PURPLE,5,18
-2025-08-28,No School,Tomorrow,no_school.bmp,PURPLE,20,23
-2025-08-29,No School,Today,no_school.bmp,PURPLE,5,18
-2025-08-31,No School,Tomorrow,no_school.bmp,PURPLE,20,23
-2025-09-01,No School,Today,no_school.bmp,PURPLE,5,18
-2025-10-23,No School,Tomorrow,no_school.bmp,PURPLE,20,23
-2025-10-24,No School,Today,no_school.bmp,PURPLE,5,18
 2025-11-10,Holiday P.,Tomorrow,guidepost_holiday.bmp,LILAC,20,23
 2025-11-11,Holiday P.,Today,guidepost_holiday.bmp,LILAC,5,18
+2025-11-15,Fiesta,Nico Coshi,party.bmp,AQUA,4,18
 2025-11-26,No School,Tomorrow,no_school.bmp,PURPLE,20,23
+2025-11-27,Happy,Thanksgiving,thanksgiving.bmp,ORANGE
 2025-11-27,No School,Today,no_school.bmp,PURPLE,5,18
 2025-11-27,No School,Tomorrow,no_school.bmp,PURPLE,20,23
 2025-11-28,No School,Today,no_school.bmp,PURPLE,5,18
+2025-12-21,Hello,Winter,winter.bmp,RED
 2025-12-21,Holiday P.,Tomorrow,guidepost_holiday.bmp,LILAC,20,23
 2025-12-22,Holiday P.,Today,guidepost_holiday.bmp,LILAC,5,18
 2025-12-22,Holiday P.,Tomorrow,guidepost_holiday.bmp,LILAC,20,23
@@ -58,10 +42,13 @@
 2026-02-16,Holiday P.,Today,guidepost_holiday.bmp,LILAC,5,18
 2026-03-05,No School,Tomorrow,no_school.bmp,PURPLE,20,23
 2026-03-06,No School,Today,no_school.bmp,PURPLE,5,18
+2026-03-20,Hello,Spring,spring.bmp,PINK
 2026-05-24,No School,Tomorrow,no_school.bmp,PURPLE,20,23
 2026-05-25,No School,Today,no_school.bmp,PURPLE,5,18
 2026-06-18,No School,Tomorrow,no_school.bmp,PURPLE,20,23
 2026-06-19,No School,Today,no_school.bmp,PURPLE,5,18
+2026-06-21,Hello,Summer,summer.bmp,MINT
 2026-07-02,No School,Tomorrow,no_school.bmp,PURPLE,20,23
 2026-07-03,No School,Today,no_school.bmp,PURPLE,5,18
-
+2026-09-22,Fall,Begins,fall.bmp,ORANGE
+2026-11-26,Happy,Thanksgiving,thanksgiving.bmp,ORANGE
