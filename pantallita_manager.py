@@ -31,11 +31,11 @@ VALID_COLORS = [
 	"BROWN", "BEIGE", "DARK_GRAY", "GRAY", "DIMMEST_WHITE"
 ]
 
-# Valid days (1=Monday, 7=Sunday)
-VALID_DAYS = "1234567"
+# Valid days (0=Monday, 6=Sunday) - CHANGE THIS IF NEEDED
+VALID_DAYS = "0123456"
 DAY_NAMES = {
-	"1": "Mon", "2": "Tue", "3": "Wed", "4": "Thu",
-	"5": "Fri", "6": "Sat", "7": "Sun"
+	"0": "Mon", "1": "Tue", "2": "Wed", "3": "Thu",
+	"4": "Fri", "5": "Sat", "6": "Sun"
 }
 
 # ============================================================================
@@ -520,48 +520,45 @@ class ScheduleManager:
 		print(f"✓ Loaded schedules for {len(self.schedules)} dates")
 	
 	def _load_schedule_file(self, filepath):
-		"""Load a single schedule CSV file"""
+		"""Load a single schedule CSV file (skips comments, no header row expected)"""
 		schedules = []
 		
 		try:
 			with open(filepath, 'r') as f:
-				# DEBUG: Print first few lines
-				print(f"DEBUG: Loading {filepath.name}")
-				
-				reader = csv.DictReader(f)
-				
-				# DEBUG: Print field names
-				print(f"DEBUG: CSV headers: {reader.fieldnames}")
-				
-				for row_num, row in enumerate(reader, 1):
-					# DEBUG: Print first row
-					if row_num == 1:
-						print(f"DEBUG: First row data: {row}")
+				for line_num, line in enumerate(f, 1):
+					line = line.strip()
 					
-					# Skip empty rows
-					if not row.get('name'):
-						print(f"DEBUG: Skipping empty row {row_num}")
+					# Skip empty lines and comments
+					if not line or line.startswith('#'):
 						continue
 					
-					# Ensure all fields exist
+					# Parse CSV data directly
+					parts = [p.strip() for p in line.split(',')]
+					
+					# Need at least 9 fields
+					if len(parts) < 9:
+						print(f"⚠️  Line {line_num} in {filepath.name}: expected 9 fields, got {len(parts)}")
+						continue
+					
 					schedule = {
-						'name': row.get('name', ''),
-						'enabled': row.get('enabled', '1'),
-						'days': row.get('days', '12345'),
-						'start_hour': row.get('start_hour', '0'),
-						'start_min': row.get('start_min', '0'),
-						'end_hour': row.get('end_hour', '23'),
-						'end_min': row.get('end_min', '59'),
-						'image': row.get('image', ''),
-						'progressbar': row.get('progressbar', '1')
+						'name': parts[0],
+						'enabled': parts[1],
+						'days': parts[2],
+						'start_hour': parts[3],
+						'start_min': parts[4],
+						'end_hour': parts[5],
+						'end_min': parts[6],
+						'image': parts[7],
+						'progressbar': parts[8]
 					}
 					
 					schedules.append(schedule)
+				
+				if schedules:
+					print(f"✓ Loaded {len(schedules)} schedule(s) from {filepath.name}")
 					
 		except Exception as e:
 			print(f"⚠️  Error loading {filepath.name}: {e}")
-			import traceback
-			traceback.print_exc()
 		
 		return schedules
 	
@@ -697,13 +694,27 @@ class ScheduleManager:
 			filepath = SCHEDULES_FOLDER / f"{date_key}.csv"
 			
 			with open(filepath, 'w', newline='') as f:
-				fieldnames = ['name', 'enabled', 'days', 'start_hour', 'start_min', 
-							 'end_hour', 'end_min', 'image', 'progressbar']
-				writer = csv.DictWriter(f, fieldnames=fieldnames)
+				# Write comment header (for human readability)
+				f.write('# Format: name,enabled,days,start_hour,start_min,end_hour,end_min,image,progressbar\n')
+				f.write('# enabled: 1=true, 0=false\n')
+				f.write('# days: 0-6 for Mon-Sun (e.g., "01234" = Mon-Fri)\n')
+				f.write('# progressbar: 1=true, 0=false\n')
 				
-				writer.writeheader()
+				# Write data directly (no CSV header row)
+				writer = csv.writer(f)
 				for schedule in schedule_list:
-					writer.writerow(schedule)
+					row = [
+						schedule['name'],
+						schedule['enabled'],
+						schedule['days'],
+						schedule['start_hour'],
+						schedule['start_min'],
+						schedule['end_hour'],
+						schedule['end_min'],
+						schedule['image'],
+						schedule['progressbar']
+					]
+					writer.writerow(row)
 			
 			print(f"✓ Saved {len(schedule_list)} schedule(s) to {filepath.name}")
 		
@@ -1231,6 +1242,68 @@ def cleanup_past_events(manager):
 		print(f"✓ Removed {removed_count} past events")
 	else:
 		print("✓ No past events to remove")
+		
+def check_schedule_overlap(manager, date, days, start_time, end_time, exclude_name=None):
+	"""
+	Check if a schedule overlaps with existing schedules
+	Returns list of overlapping schedules
+	"""
+	overlaps = []
+	
+	# Get schedules for this date
+	if date not in manager.schedules:
+		return overlaps
+	
+	# Parse new schedule times
+	try:
+		new_start_h, new_start_m = map(int, start_time.split(':'))
+		new_end_h, new_end_m = map(int, end_time.split(':'))
+		new_start_mins = new_start_h * 60 + new_start_m
+		new_end_mins = new_end_h * 60 + new_end_m
+	except:
+		return overlaps  # Can't parse times, skip check
+	
+	# Convert days string to set for comparison
+	new_days_set = set(days)
+	
+	# Check each existing schedule
+	for existing in manager.schedules[date]:
+		# Skip if this is the schedule we're editing
+		if exclude_name and existing['name'] == exclude_name:
+			continue
+		
+		# Check if days overlap
+		existing_days_set = set(existing['days'])
+		if not new_days_set.intersection(existing_days_set):
+			continue  # No overlapping days
+		
+		# Days overlap, check times
+		try:
+			exist_start_h = int(existing['start_hour'])
+			exist_start_m = int(existing['start_min'])
+			exist_end_h = int(existing['end_hour'])
+			exist_end_m = int(existing['end_min'])
+			
+			exist_start_mins = exist_start_h * 60 + exist_start_m
+			exist_end_mins = exist_end_h * 60 + exist_end_m
+			
+			# Check for time overlap
+			# Overlaps if: (new_start < exist_end) AND (new_end > exist_start)
+			if new_start_mins < exist_end_mins and new_end_mins > exist_start_mins:
+				# Get overlapping days
+				overlap_days = new_days_set.intersection(existing_days_set)
+				overlap_day_names = [DAY_NAMES[d] for d in sorted(overlap_days) if d in DAY_NAMES]
+				
+				overlaps.append({
+					'name': existing['name'],
+					'start': f"{exist_start_h}:{str(exist_start_m).zfill(2)}",
+					'end': f"{exist_end_h}:{str(exist_end_m).zfill(2)}",
+					'days': ','.join(overlap_day_names)
+				})
+		except:
+			pass  # Skip if can't parse existing schedule
+	
+	return overlaps
 
 
 # ============================================================================
@@ -1251,9 +1324,11 @@ def create_schedule_interactive(manager):
 	
 	if date_type == '2':
 		date = 'default'
+		is_default = True
 		print("✓ Creating default schedule")
 	else:
 		date = None
+		is_default = False
 		while date is None:
 			date_input = input("\nEnter date (YYYY-MM-DD): ").strip()
 			if date_input.lower() == 'cancel':
@@ -1276,22 +1351,37 @@ def create_schedule_interactive(manager):
 		else:
 			print(f"   ❌ {msg}")
 	
-	# Days
-	print("\n📆 Days (1=Monday, 7=Sunday):")
-	print("  Examples: '12345' = Mon-Fri")
-	print("           '67' = Sat-Sun")
-	print("           '1234567' = All days")
-	
-	days = None
-	while days is None:
-		days_input = input("\nDays: ").strip()
-		if days_input.lower() == 'cancel':
-			return
-		valid, msg = ScheduleValidator.validate_days(days_input)
-		if valid:
-			days = days_input
-		else:
-			print(f"   ❌ {msg}")
+	# Days - AUTO-SET for date-specific, ASK for default
+	if is_default:
+		print("\n📆 Days (1=Monday, 7=Sunday):")
+		print("  Examples: '12345' = Mon-Fri")
+		print("           '67' = Sat-Sun")
+		print("           '1234567' = All days")
+		
+		days = None
+		while days is None:
+			days_input = input("\nDays: ").strip()
+			if days_input.lower() == 'cancel':
+				return
+			valid, msg = ScheduleValidator.validate_days(days_input)
+			if valid:
+				days = days_input
+			else:
+				print(f"   ❌ {msg}")
+	else:
+		# AUTO-SET days based on date
+		try:
+			date_obj = datetime.strptime(date, '%Y-%m-%d')
+			# Python weekday: 0=Monday, 6=Sunday
+			# Our format: 1=Monday, 7=Sunday
+			day_num = str(date_obj.weekday() + 1)
+			days = day_num
+			day_name = DAY_NAMES[day_num]
+			print(f"\n✓ Auto-set days to {day_name} (day {day_num}) based on {date}")
+		except:
+			# Fallback to all days if date parsing fails
+			days = "1234567"
+			print("\n✓ Auto-set days to all days (1234567)")
 	
 	# Start Time
 	start_time = None
@@ -1364,15 +1454,30 @@ def create_schedule_interactive(manager):
 	progress_input = input("\nShow progress bar? (y/n, default=y): ").strip().lower()
 	progressbar = progress_input != 'n'
 	
+	# Check for overlaps BEFORE showing preview
+	overlaps = check_schedule_overlap(manager, date, days, start_time, end_time, exclude_name=None)
+	
 	# Preview
-	day_names = [DAY_NAMES[d] for d in days if d in DAY_NAMES]
+	if is_default:
+		day_names = [DAY_NAMES[d] for d in days if d in DAY_NAMES]
+		days_display = ', '.join(day_names)
+	else:
+		days_display = DAY_NAMES.get(days, days)
+	
 	print(f"\n📋 Preview:")
 	print(f"  Date: {date}")
 	print(f"  Name: {name}")
-	print(f"  Days: {', '.join(day_names)}")
+	print(f"  Days: {days_display}")
 	print(f"  Time: {start_time} - {end_time}")
 	print(f"  Image: {image}")
 	print(f"  Progress: {'Yes' if progressbar else 'No'}")
+	
+	# Show overlap warnings
+	if overlaps:
+		print(f"\n⚠️  WARNING: This schedule overlaps with {len(overlaps)} existing schedule(s):")
+		for overlap in overlaps:
+			print(f"     - {overlap['name']}: {overlap['start']}-{overlap['end']} on {overlap['days']}")
+		print("\n   Overlapping schedules may cause conflicts!")
 	
 	confirm = input("\nSave schedule? (y/n): ").strip().lower()
 	if confirm == 'y':
@@ -1381,6 +1486,68 @@ def create_schedule_interactive(manager):
 		print("Cancelled")
 
 
+def check_schedule_overlap(manager, date, days, start_time, end_time, exclude_name=None):
+	"""
+	Check if a schedule overlaps with existing schedules
+	Returns list of overlapping schedules
+	"""
+	overlaps = []
+	
+	# Get schedules for this date
+	if date not in manager.schedules:
+		return overlaps
+	
+	# Parse new schedule times
+	try:
+		new_start_h, new_start_m = map(int, start_time.split(':'))
+		new_end_h, new_end_m = map(int, end_time.split(':'))
+		new_start_mins = new_start_h * 60 + new_start_m
+		new_end_mins = new_end_h * 60 + new_end_m
+	except:
+		return overlaps  # Can't parse times, skip check
+	
+	# Convert days string to set for comparison
+	new_days_set = set(days)
+	
+	# Check each existing schedule
+	for existing in manager.schedules[date]:
+		# Skip if this is the schedule we're editing
+		if exclude_name and existing['name'] == exclude_name:
+			continue
+		
+		# Check if days overlap
+		existing_days_set = set(existing['days'])
+		if not new_days_set.intersection(existing_days_set):
+			continue  # No overlapping days
+		
+		# Days overlap, check times
+		try:
+			exist_start_h = int(existing['start_hour'])
+			exist_start_m = int(existing['start_min'])
+			exist_end_h = int(existing['end_hour'])
+			exist_end_m = int(existing['end_min'])
+			
+			exist_start_mins = exist_start_h * 60 + exist_start_m
+			exist_end_mins = exist_end_h * 60 + exist_end_m
+			
+			# Check for time overlap
+			# Overlaps if: (new_start < exist_end) AND (new_end > exist_start)
+			if new_start_mins < exist_end_mins and new_end_mins > exist_start_mins:
+				# Get overlapping days
+				overlap_days = new_days_set.intersection(existing_days_set)
+				overlap_day_names = [DAY_NAMES[d] for d in sorted(overlap_days) if d in DAY_NAMES]
+				
+				overlaps.append({
+					'name': existing['name'],
+					'start': f"{exist_start_h}:{str(exist_start_m).zfill(2)}",
+					'end': f"{exist_end_h}:{str(exist_end_m).zfill(2)}",
+					'days': ','.join(overlap_day_names)
+				})
+		except:
+			pass  # Skip if can't parse existing schedule
+	
+	return overlaps
+	
 def edit_schedule_interactive(manager):
 	"""Interactive schedule editing"""
 	print("\n✏️  Edit Schedule")
@@ -1416,6 +1583,7 @@ def edit_schedule_interactive(manager):
 			return
 	
 	schedule = schedule_list[index]
+	original_name = schedule['name']
 	
 	print(f"\nEditing: {schedule['name']}")
 	print("(Press Enter to keep current value)\n")
@@ -1443,6 +1611,24 @@ def edit_schedule_interactive(manager):
 	enabled_str = "y" if schedule['enabled'] == '1' else "n"
 	enabled_new = input(f"Enabled? (y/n) [{enabled_str}]: ").strip().lower() or enabled_str
 	schedule['enabled'] = '1' if enabled_new == 'y' else '0'
+	
+	# Check for overlaps (exclude current schedule from check)
+	overlaps = check_schedule_overlap(
+		manager, date, schedule['days'],
+		f"{schedule['start_hour']}:{schedule['start_min'].zfill(2)}",
+		f"{schedule['end_hour']}:{schedule['end_min'].zfill(2)}",
+		exclude_name=original_name
+	)
+	
+	if overlaps:
+		print(f"\n⚠️  WARNING: This schedule now overlaps with {len(overlaps)} other schedule(s):")
+		for overlap in overlaps:
+			print(f"     - {overlap['name']}: {overlap['start']}-{overlap['end']} on {overlap['days']}")
+		
+		confirm = input("\nSave anyway? (y/n): ").strip().lower()
+		if confirm != 'y':
+			print("Edit cancelled")
+			return
 	
 	print("✓ Schedule updated")
 
