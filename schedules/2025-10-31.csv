@@ -4,5 +4,5 @@
 # progressbar: 1=true, 0=false
 
 # Morning Routine
-Quiet Time,1,56,7,0,7,17,quiet_time.bmp,1
+Quiet Time,1,56,7,0,7,17,story_and_bed.bmp,1
 Eat Dinner,1,0123456,7,17,7,30,dinner.bmp,1
