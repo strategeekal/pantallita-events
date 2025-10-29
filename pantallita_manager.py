@@ -945,16 +945,18 @@ def schedule_menu(manager):
 		print("="*80)
 		print("1. List all schedules")
 		print("2. Create new schedule")
-		print("3. Edit schedule")
-		print("4. Delete schedule file")
-		print("5. Show available images")
-		print("6. Validate all schedules")
-		print("7. Clean up old schedules")
-		print("8. Save all changes (local only)")
+		print("3. Create from template")  # ← NEW
+		print("4. Edit schedule")         # ← Was 3
+		print("5. Delete schedule file")  # ← Was 4
+		print("6. Show available images") # ← Was 5
+		print("7. Validate all schedules")# ← Was 6
+		print("8. Clean up old schedules")# ← Was 7
+		print("9. Sync default ↔ local")  # ← NEW
+		print("10. Save all changes")     # ← Was 8
 		print("0. Back to main menu")
 		print()
 		
-		choice = input("Choose option (0-8): ").strip()
+		choice = input("Choose option (0-10): ").strip()
 		
 		if choice == "1":
 			manager.list_schedules()
@@ -962,19 +964,22 @@ def schedule_menu(manager):
 		elif choice == "2":
 			create_schedule_interactive(manager)
 		
-		elif choice == "3":
-			edit_schedule_interactive(manager)
+		elif choice == "3":  # NEW
+			create_from_template_interactive(manager)
 		
 		elif choice == "4":
-			delete_schedule_file_interactive(manager)
+			edit_schedule_interactive(manager)
 		
 		elif choice == "5":
-			show_available_images("schedules")
+			delete_schedule_file_interactive(manager)
 		
 		elif choice == "6":
-			validate_all_schedules(manager)
+			show_available_images("schedules")
 		
 		elif choice == "7":
+			validate_all_schedules(manager)
+		
+		elif choice == "8":
 			print("\n🗑️  Clean Up Old Schedules")
 			days = input("Delete schedules older than how many days? (default=30): ").strip() or "30"
 			try:
@@ -982,7 +987,10 @@ def schedule_menu(manager):
 			except ValueError:
 				print("❌ Invalid number")
 		
-		elif choice == "8":
+		elif choice == "9":  # NEW
+			sync_default_and_local(manager)
+		
+		elif choice == "10":
 			manager.save_all()
 		
 		elif choice == "0":
@@ -1304,6 +1312,93 @@ def check_schedule_overlap(manager, date, days, start_time, end_time, exclude_na
 			pass  # Skip if can't parse existing schedule
 	
 	return overlaps
+	
+def sync_default_and_local(manager):
+	"""Sync between default.csv and local schedules.csv"""
+	print("\n🔄 Sync Default ↔ Local Schedule Files")
+	print("="*80)
+	
+	default_file = SCHEDULES_FOLDER / "default.csv"
+	local_file = SCHEDULES_FOLDER / "schedules.csv"
+	
+	# Check if files exist
+	default_exists = default_file.exists()
+	local_exists = local_file.exists()
+	
+	if not default_exists and not local_exists:
+		print("❌ Neither default.csv nor schedules.csv exists")
+		return
+	
+	# Get modification times
+	if default_exists:
+		default_mtime = default_file.stat().st_mtime
+		default_time = datetime.fromtimestamp(default_mtime)
+		print(f"📄 default.csv:    Last modified {default_time.strftime('%Y-%m-%d %H:%M:%S')}")
+	else:
+		print(f"📄 default.csv:    Does not exist")
+		default_mtime = 0
+	
+	if local_exists:
+		local_mtime = local_file.stat().st_mtime
+		local_time = datetime.fromtimestamp(local_mtime)
+		print(f"📄 schedules.csv:  Last modified {local_time.strftime('%Y-%m-%d %H:%M:%S')}")
+	else:
+		print(f"📄 schedules.csv:  Does not exist")
+		local_mtime = 0
+	
+	# Determine which is newer
+	if not default_exists:
+		print("\n→ Will create default.csv from schedules.csv")
+		action = "local_to_default"
+	elif not local_exists:
+		print("\n→ Will create schedules.csv from default.csv")
+		action = "default_to_local"
+	elif default_mtime > local_mtime:
+		age_diff = (default_mtime - local_mtime) / 60  # minutes
+		print(f"\n→ default.csv is newer (by {age_diff:.0f} minutes)")
+		print("   Will update schedules.csv from default.csv")
+		action = "default_to_local"
+	elif local_mtime > default_mtime:
+		age_diff = (local_mtime - default_mtime) / 60  # minutes
+		print(f"\n→ schedules.csv is newer (by {age_diff:.0f} minutes)")
+		print("   Will update default.csv from schedules.csv")
+		action = "local_to_default"
+	else:
+		print("\n✓ Files are already in sync!")
+		return
+	
+	# Confirm
+	confirm = input("\nProceed with sync? (y/n): ").strip().lower()
+	
+	if confirm != 'y':
+		print("Sync cancelled")
+		return
+	
+	# Perform sync
+	try:
+		import shutil
+		
+		if action == "default_to_local":
+			shutil.copy2(default_file, local_file)
+			print(f"✓ Copied default.csv → schedules.csv")
+			
+			# Also update in-memory
+			if 'default' in manager.schedules:
+				manager.schedules['local'] = manager.schedules['default'].copy()
+		
+		elif action == "local_to_default":
+			shutil.copy2(local_file, default_file)
+			print(f"✓ Copied schedules.csv → default.csv")
+			
+			# Also update in-memory
+			if 'local' in manager.schedules:
+				manager.schedules['default'] = manager.schedules['local'].copy()
+		
+		print("\n✅ Sync complete!")
+		print("💡 Remember to push to GitHub to sync with devices")
+		
+	except Exception as e:
+		print(f"❌ Sync failed: {e}")
 
 
 # ============================================================================
@@ -1484,6 +1579,226 @@ def create_schedule_interactive(manager):
 		manager.add_schedule(date, name, days, start_time, end_time, image, progressbar)
 	else:
 		print("Cancelled")
+		
+def create_from_template_interactive(manager):
+	"""Create a new schedule file based on a template"""
+	print("\n📋 Create Schedule From Template")
+	print("="*80)
+	
+	# Show available templates
+	print("\nAvailable templates:")
+	print("  1. Default schedule (all schedules from default.csv)")
+	print("  2. Copy from another date")
+	print("  3. Copy from local device file (schedules/schedules.csv)")
+	print("  0. Cancel")
+	
+	template_choice = input("\nChoose template (0-3): ").strip()
+	
+	if template_choice == "0":
+		return
+	
+	# Get target date
+	target_date = None
+	while target_date is None:
+		date_input = input("\nTarget date for new schedule (YYYY-MM-DD): ").strip()
+		if date_input.lower() == 'cancel':
+			return
+		valid, msg = ScheduleValidator.validate_schedule_date(date_input)
+		if valid and date_input != 'default':
+			target_date = date_input
+		else:
+			print(f"   ❌ {msg if not valid else 'Cannot use default as target'}")
+	
+	# Get target day of week
+	try:
+		target_date_obj = datetime.strptime(target_date, '%Y-%m-%d')
+		target_day = str(target_date_obj.weekday() + 1)  # 1=Monday, 7=Sunday
+		target_day_name = DAY_NAMES[target_day]
+		print(f"✓ Target date is a {target_day_name} (day {target_day})")
+	except:
+		print("❌ Invalid date")
+		return
+	
+	# Load template based on choice
+	template_schedules = []
+	
+	if template_choice == "1":
+		# Use default.csv
+		if 'default' not in manager.schedules:
+			print("❌ No default schedule found")
+			return
+		
+		# Filter schedules that apply to target day
+		for schedule in manager.schedules['default']:
+			if target_day in schedule['days']:
+				template_schedules.append(schedule.copy())
+		
+		print(f"\n✓ Found {len(template_schedules)} schedule(s) from default that apply to {target_day_name}")
+	
+	elif template_choice == "2":
+		# Copy from another date
+		manager.list_schedules()
+		
+		source_date = input("\nSource date (YYYY-MM-DD) or 'default': ").strip()
+		
+		if source_date not in manager.schedules:
+			print(f"❌ No schedule found for {source_date}")
+			return
+		
+		# If copying from default, filter by day
+		if source_date == 'default':
+			for schedule in manager.schedules['default']:
+				if target_day in schedule['days']:
+					template_schedules.append(schedule.copy())
+			print(f"✓ Found {len(template_schedules)} schedule(s) that apply to {target_day_name}")
+		else:
+			# Copy all schedules from that date
+			template_schedules = [s.copy() for s in manager.schedules[source_date]]
+			print(f"✓ Copying {len(template_schedules)} schedule(s) from {source_date}")
+	
+	elif template_choice == "3":
+		# Load from local device file
+		local_file = SCHEDULES_FOLDER / "schedules.csv"
+		
+		if not local_file.exists():
+			print(f"❌ Local file not found: {local_file}")
+			return
+		
+		# Load the local file
+		local_schedules = manager._load_schedule_file(local_file)
+		
+		# Filter by target day
+		for schedule in local_schedules:
+			if target_day in schedule['days']:
+				template_schedules.append(schedule.copy())
+		
+		print(f"✓ Found {len(template_schedules)} schedule(s) from local file that apply to {target_day_name}")
+	
+	else:
+		print("❌ Invalid choice")
+		return
+	
+	# Check if we have any schedules
+	if not template_schedules:
+		print(f"❌ No schedules found for {target_day_name} in selected template")
+		return
+	
+	# Preview template schedules
+	print(f"\n📋 Template schedules to copy:")
+	print("-" * 80)
+	for i, schedule in enumerate(template_schedules):
+		start = f"{schedule['start_hour']}:{schedule['start_min'].zfill(2)}"
+		end = f"{schedule['end_hour']}:{schedule['end_min'].zfill(2)}"
+		print(f"  {i+1}. {schedule['name']:25s} | {start}-{end} | {schedule['image']}")
+	print("-" * 80)
+	
+	# Options for modification
+	print("\nOptions:")
+	print("  1. Copy all schedules as-is")
+	print("  2. Copy all with time adjustment (shift all schedules)")
+	print("  3. Select which schedules to copy")
+	print("  0. Cancel")
+	
+	mod_choice = input("\nChoose option (0-3): ").strip()
+	
+	if mod_choice == "0":
+		return
+	
+	elif mod_choice == "1":
+		# Copy as-is
+		selected_schedules = template_schedules
+	
+	elif mod_choice == "2":
+		# Time adjustment
+		print("\n⏰ Time Adjustment")
+		print("Enter time shift (e.g., +30 for 30 min later, -15 for 15 min earlier)")
+		
+		try:
+			shift_input = input("Shift (minutes): ").strip()
+			shift_minutes = int(shift_input)
+			
+			selected_schedules = []
+			for schedule in template_schedules:
+				adjusted = schedule.copy()
+				
+				# Adjust start time
+				start_mins = int(adjusted['start_hour']) * 60 + int(adjusted['start_min'])
+				start_mins += shift_minutes
+				adjusted['start_hour'] = str(start_mins // 60)
+				adjusted['start_min'] = str(start_mins % 60)
+				
+				# Adjust end time
+				end_mins = int(adjusted['end_hour']) * 60 + int(adjusted['end_min'])
+				end_mins += shift_minutes
+				adjusted['end_hour'] = str(end_mins // 60)
+				adjusted['end_min'] = str(end_mins % 60)
+				
+				selected_schedules.append(adjusted)
+			
+			print(f"✓ Adjusted all times by {shift_minutes:+d} minutes")
+			
+		except ValueError:
+			print("❌ Invalid shift value")
+			return
+	
+	elif mod_choice == "3":
+		# Select specific schedules
+		print("\nEnter schedule numbers to copy (comma-separated, e.g., 1,3,5):")
+		selection = input("Schedules: ").strip()
+		
+		try:
+			indices = [int(x.strip()) - 1 for x in selection.split(',')]
+			selected_schedules = [template_schedules[i] for i in indices if 0 <= i < len(template_schedules)]
+			
+			if not selected_schedules:
+				print("❌ No valid schedules selected")
+				return
+			
+			print(f"✓ Selected {len(selected_schedules)} schedule(s)")
+			
+		except:
+			print("❌ Invalid selection")
+			return
+	
+	else:
+		print("❌ Invalid choice")
+		return
+	
+	# Update days to match target day (date-specific schedules should only run on that day)
+	for schedule in selected_schedules:
+		schedule['days'] = target_day
+	
+	# Final confirmation
+	print(f"\n📋 Ready to create schedule for {target_date} ({target_day_name})")
+	print(f"   {len(selected_schedules)} schedule(s) will be added")
+	
+	# Check if target date already has schedules
+	if target_date in manager.schedules and manager.schedules[target_date]:
+		print(f"\n⚠️  WARNING: {target_date} already has {len(manager.schedules[target_date])} schedule(s)")
+		print("   Options:")
+		print("     1. Replace existing schedules")
+		print("     2. Merge with existing schedules")
+		print("     0. Cancel")
+		
+		replace_choice = input("\n   Choose (0-2): ").strip()
+		
+		if replace_choice == "0":
+			return
+		elif replace_choice == "1":
+			manager.schedules[target_date] = selected_schedules
+			print(f"✓ Replaced schedules for {target_date}")
+		elif replace_choice == "2":
+			manager.schedules[target_date].extend(selected_schedules)
+			print(f"✓ Merged schedules for {target_date}")
+		else:
+			print("❌ Invalid choice")
+			return
+	else:
+		# No existing schedules, just add
+		manager.schedules[target_date] = selected_schedules
+		print(f"✓ Created schedule for {target_date}")
+	
+	print(f"\n✅ Schedule file created! Remember to save (option 10) and push to GitHub (option 3 from main menu)")
 
 
 def check_schedule_overlap(manager, date, days, start_time, end_time, exclude_name=None):
