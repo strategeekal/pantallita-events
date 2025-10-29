@@ -421,7 +421,7 @@ class ScheduleValidator:
 		# Check all characters are 1-7
 		for char in days_str:
 			if char not in VALID_DAYS:
-				return False, f"Days must contain only 1-7 (found '{char}')"
+				return False, f"Days must contain only 0-6 (found '{char}')"
 		
 		# Check for duplicates
 		if len(set(days_str)) != len(days_str):
@@ -1405,6 +1405,68 @@ def sync_default_and_local(manager):
 # INTERACTIVE HELPERS - SCHEDULES
 # ============================================================================
 
+def check_schedule_overlap(manager, date, days, start_time, end_time, exclude_name=None):
+	"""
+	Check if a schedule overlaps with existing schedules
+	Returns list of overlapping schedules
+	"""
+	overlaps = []
+	
+	# Get schedules for this date
+	if date not in manager.schedules:
+		return overlaps
+	
+	# Parse new schedule times
+	try:
+		new_start_h, new_start_m = map(int, start_time.split(':'))
+		new_end_h, new_end_m = map(int, end_time.split(':'))
+		new_start_mins = new_start_h * 60 + new_start_m
+		new_end_mins = new_end_h * 60 + new_end_m
+	except:
+		return overlaps  # Can't parse times, skip check
+	
+	# Convert days string to set for comparison
+	new_days_set = set(days)
+	
+	# Check each existing schedule
+	for existing in manager.schedules[date]:
+		# Skip if this is the schedule we're editing
+		if exclude_name and existing['name'] == exclude_name:
+			continue
+		
+		# Check if days overlap
+		existing_days_set = set(existing['days'])
+		if not new_days_set.intersection(existing_days_set):
+			continue  # No overlapping days
+		
+		# Days overlap, check times
+		try:
+			exist_start_h = int(existing['start_hour'])
+			exist_start_m = int(existing['start_min'])
+			exist_end_h = int(existing['end_hour'])
+			exist_end_m = int(existing['end_min'])
+			
+			exist_start_mins = exist_start_h * 60 + exist_start_m
+			exist_end_mins = exist_end_h * 60 + exist_end_m
+			
+			# Check for time overlap
+			# Overlaps if: (new_start < exist_end) AND (new_end > exist_start)
+			if new_start_mins < exist_end_mins and new_end_mins > exist_start_mins:
+				# Get overlapping days
+				overlap_days = new_days_set.intersection(existing_days_set)
+				overlap_day_names = [DAY_NAMES[d] for d in sorted(overlap_days) if d in DAY_NAMES]
+				
+				overlaps.append({
+					'name': existing['name'],
+					'start': f"{exist_start_h}:{str(exist_start_m).zfill(2)}",
+					'end': f"{exist_end_h}:{str(exist_end_m).zfill(2)}",
+					'days': ','.join(overlap_day_names)
+				})
+		except:
+			pass  # Skip if can't parse existing schedule
+	
+	return overlaps
+
 def create_schedule_interactive(manager):
 	"""Interactive schedule creation"""
 	print("\n➕ Create New Schedule")
@@ -1449,9 +1511,9 @@ def create_schedule_interactive(manager):
 	# Days - AUTO-SET for date-specific, ASK for default
 	if is_default:
 		print("\n📆 Days (1=Monday, 7=Sunday):")
-		print("  Examples: '12345' = Mon-Fri")
-		print("           '67' = Sat-Sun")
-		print("           '1234567' = All days")
+		print("  Examples: '01234' = Mon-Fri")
+		print("           '56' = Sat-Sun")
+		print("           '0123456' = All days")
 		
 		days = None
 		while days is None:
@@ -1468,15 +1530,14 @@ def create_schedule_interactive(manager):
 		try:
 			date_obj = datetime.strptime(date, '%Y-%m-%d')
 			# Python weekday: 0=Monday, 6=Sunday
-			# Our format: 1=Monday, 7=Sunday
-			day_num = str(date_obj.weekday() + 1)
+			day_num = str(date_obj.weekday())
 			days = day_num
 			day_name = DAY_NAMES[day_num]
 			print(f"\n✓ Auto-set days to {day_name} (day {day_num}) based on {date}")
 		except:
 			# Fallback to all days if date parsing fails
-			days = "1234567"
-			print("\n✓ Auto-set days to all days (1234567)")
+			days = "0123456"
+			print("\n✓ Auto-set days to all days (0123456)")
 	
 	# Start Time
 	start_time = None
@@ -1612,7 +1673,7 @@ def create_from_template_interactive(manager):
 	# Get target day of week
 	try:
 		target_date_obj = datetime.strptime(target_date, '%Y-%m-%d')
-		target_day = str(target_date_obj.weekday() + 1)  # 1=Monday, 7=Sunday
+		target_day = str(target_date_obj.weekday())  # 0=Monday, 6=Sunday
 		target_day_name = DAY_NAMES[target_day]
 		print(f"✓ Target date is a {target_day_name} (day {target_day})")
 	except:
@@ -1800,68 +1861,6 @@ def create_from_template_interactive(manager):
 	
 	print(f"\n✅ Schedule file created! Remember to save (option 10) and push to GitHub (option 3 from main menu)")
 
-
-def check_schedule_overlap(manager, date, days, start_time, end_time, exclude_name=None):
-	"""
-	Check if a schedule overlaps with existing schedules
-	Returns list of overlapping schedules
-	"""
-	overlaps = []
-	
-	# Get schedules for this date
-	if date not in manager.schedules:
-		return overlaps
-	
-	# Parse new schedule times
-	try:
-		new_start_h, new_start_m = map(int, start_time.split(':'))
-		new_end_h, new_end_m = map(int, end_time.split(':'))
-		new_start_mins = new_start_h * 60 + new_start_m
-		new_end_mins = new_end_h * 60 + new_end_m
-	except:
-		return overlaps  # Can't parse times, skip check
-	
-	# Convert days string to set for comparison
-	new_days_set = set(days)
-	
-	# Check each existing schedule
-	for existing in manager.schedules[date]:
-		# Skip if this is the schedule we're editing
-		if exclude_name and existing['name'] == exclude_name:
-			continue
-		
-		# Check if days overlap
-		existing_days_set = set(existing['days'])
-		if not new_days_set.intersection(existing_days_set):
-			continue  # No overlapping days
-		
-		# Days overlap, check times
-		try:
-			exist_start_h = int(existing['start_hour'])
-			exist_start_m = int(existing['start_min'])
-			exist_end_h = int(existing['end_hour'])
-			exist_end_m = int(existing['end_min'])
-			
-			exist_start_mins = exist_start_h * 60 + exist_start_m
-			exist_end_mins = exist_end_h * 60 + exist_end_m
-			
-			# Check for time overlap
-			# Overlaps if: (new_start < exist_end) AND (new_end > exist_start)
-			if new_start_mins < exist_end_mins and new_end_mins > exist_start_mins:
-				# Get overlapping days
-				overlap_days = new_days_set.intersection(existing_days_set)
-				overlap_day_names = [DAY_NAMES[d] for d in sorted(overlap_days) if d in DAY_NAMES]
-				
-				overlaps.append({
-					'name': existing['name'],
-					'start': f"{exist_start_h}:{str(exist_start_m).zfill(2)}",
-					'end': f"{exist_end_h}:{str(exist_end_m).zfill(2)}",
-					'days': ','.join(overlap_day_names)
-				})
-		except:
-			pass  # Skip if can't parse existing schedule
-	
-	return overlaps
 	
 def edit_schedule_interactive(manager):
 	"""Interactive schedule editing"""
