@@ -1561,7 +1561,7 @@ def create_schedule_interactive(manager):
 	
 	# Days - AUTO-SET for date-specific, ASK for default
 	if is_default:
-		print("\n📆 Days (1=Monday, 7=Sunday):")
+		print("\n📆 Days (0=Monday, 6=Sunday):")
 		print("  Examples: '01234' = Mon-Fri")
 		print("           '56' = Sat-Sun")
 		print("           '0123456' = All days")
@@ -2199,7 +2199,7 @@ def validate_all_schedules(manager):
 		# Validate date format and get day of week for date-specific schedules
 		try:
 			date_obj = datetime.strptime(date_key, '%Y-%m-%d')
-			expected_day = str(date_obj.weekday() + 1)  # 1=Monday, 7=Sunday
+			expected_day = str(date_obj.weekday())  # 0=Monday, 6=Sunday
 			day_name = DAY_NAMES[expected_day]
 		except ValueError:
 			issues.append(f"{date_key}: Invalid date format")
@@ -2255,7 +2255,7 @@ def auto_fix_schedule_days(manager):
 		# Get expected day
 		try:
 			date_obj = datetime.strptime(date_key, '%Y-%m-%d')
-			expected_day = str(date_obj.weekday() + 1)
+			expected_day = str(date_obj.weekday())
 			day_name = DAY_NAMES[expected_day]
 		except:
 			continue
