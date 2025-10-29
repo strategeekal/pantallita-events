@@ -563,7 +563,7 @@ class ScheduleManager:
 		return schedules
 	
 	def list_schedules(self):
-		"""List all schedules organized by date"""
+		"""List all schedules organized by date with visual spacing"""
 		if not self.schedules:
 			print("No schedules found.")
 			return
@@ -579,8 +579,7 @@ class ScheduleManager:
 		if default_schedules:
 			print(f"\n📌 DEFAULT SCHEDULE ({len(default_schedules)} items):")
 			print("-" * 100)
-			for schedule in default_schedules:
-				self._print_schedule(schedule)
+			self._print_schedule_list(default_schedules)
 		
 		# Show date-specific schedules by month
 		if date_schedules:
@@ -610,12 +609,45 @@ class ScheduleManager:
 					past_marker = " (past)" if date_obj < today else ""
 					
 					print(f"\n  📅 {date_str} ({day_name}){today_marker}{past_marker} - {len(schedule_list)} schedule(s):")
-					for schedule in schedule_list:
-						print("     ", end="")
-						self._print_schedule(schedule)
+					self._print_schedule_list(schedule_list, indent="     ")
 		
 		print("=" * 100)
 		print(f"Total: {sum(len(v) for v in self.schedules.values())} schedules across {len(self.schedules)} dates\n")
+	
+	
+	def _print_schedule_list(self, schedule_list, indent=""):
+		"""Print a list of schedules with visual spacing between time blocks"""
+		if not schedule_list:
+			return
+		
+		# Sort by start time for better visualization
+		sorted_schedules = sorted(schedule_list, key=lambda s: (
+			int(s.get('start_hour', 0)) * 60 + int(s.get('start_min', 0))
+		))
+		
+		last_end_mins = None
+		
+		for schedule in sorted_schedules:
+			# Calculate time in minutes
+			start_h = int(schedule.get('start_hour', 0))
+			start_m = int(schedule.get('start_min', 0))
+			end_h = int(schedule.get('end_hour', 0))
+			end_m = int(schedule.get('end_min', 0))
+			
+			start_mins = start_h * 60 + start_m
+			end_mins = end_h * 60 + end_m
+			
+			# Add spacing if there's a gap from last schedule
+			if last_end_mins is not None:
+				gap = start_mins - last_end_mins
+				if gap > 5:  # More than 5 minutes gap
+					print(f"{indent}   {'·' * 40} {gap} min gap {'·' * 40}")
+			
+			# Print schedule
+			print(indent, end="")
+			self._print_schedule(schedule)
+			
+			last_end_mins = end_mins
 	
 	def _print_schedule(self, schedule):
 		"""Helper to print a single schedule entry"""
@@ -652,6 +684,17 @@ class ScheduleManager:
 			for error in errors:
 				print(f"   - {error}")
 			return False
+		
+		# Check for duplicate name in this date's schedules
+		if date in self.schedules:
+			existing_names = [s['name'] for s in self.schedules[date]]
+			if name in existing_names:
+				print(f"\n⚠️  WARNING: Schedule '{name}' already exists in {date}!")
+				print(f"   If you save, only the last '{name}' will be active.")
+				confirm = input("   Add anyway? (y/n): ").strip().lower()
+				if confirm != 'y':
+					print("Cancelled")
+					return False
 		
 		# Parse times
 		start_h, start_m = map(int, start_time.split(':'))
@@ -945,18 +988,20 @@ def schedule_menu(manager):
 		print("="*80)
 		print("1. List all schedules")
 		print("2. Create new schedule")
-		print("3. Create from template")  # ← NEW
-		print("4. Edit schedule")         # ← Was 3
-		print("5. Delete schedule file")  # ← Was 4
-		print("6. Show available images") # ← Was 5
-		print("7. Validate all schedules")# ← Was 6
-		print("8. Clean up old schedules")# ← Was 7
-		print("9. Sync default ↔ local")  # ← NEW
-		print("10. Save all changes")     # ← Was 8
+		print("3. Create from template")
+		print("4. Edit schedule")
+		print("5. Delete schedule entry")      # ← NEW
+		print("6. Delete schedule file")       # ← Was 5
+		print("7. Show available images")      # ← Was 6
+		print("8. Validate all schedules")     # ← Was 7
+		print("9. Auto-fix day mismatches")    # ← Was 8
+		print("10. Clean up old schedules")    # ← Was 9
+		print("11. Sync default ↔ local")      # ← Was 10
+		print("12. Save all changes")          # ← Was 11
 		print("0. Back to main menu")
 		print()
 		
-		choice = input("Choose option (0-10): ").strip()
+		choice = input("Choose option (0-12): ").strip()
 		
 		if choice == "1":
 			manager.list_schedules()
@@ -964,22 +1009,28 @@ def schedule_menu(manager):
 		elif choice == "2":
 			create_schedule_interactive(manager)
 		
-		elif choice == "3":  # NEW
+		elif choice == "3":
 			create_from_template_interactive(manager)
 		
 		elif choice == "4":
 			edit_schedule_interactive(manager)
 		
-		elif choice == "5":
-			delete_schedule_file_interactive(manager)
+		elif choice == "5":  # NEW
+			delete_schedule_entry_interactive(manager)
 		
 		elif choice == "6":
-			show_available_images("schedules")
+			delete_schedule_file_interactive(manager)
 		
 		elif choice == "7":
-			validate_all_schedules(manager)
+			show_available_images("schedules")
 		
 		elif choice == "8":
+			validate_all_schedules(manager)
+		
+		elif choice == "9":
+			auto_fix_schedule_days(manager)
+		
+		elif choice == "10":
 			print("\n🗑️  Clean Up Old Schedules")
 			days = input("Delete schedules older than how many days? (default=30): ").strip() or "30"
 			try:
@@ -987,10 +1038,10 @@ def schedule_menu(manager):
 			except ValueError:
 				print("❌ Invalid number")
 		
-		elif choice == "9":  # NEW
+		elif choice == "11":
 			sync_default_and_local(manager)
 		
-		elif choice == "10":
+		elif choice == "12":
 			manager.save_all()
 		
 		elif choice == "0":
@@ -1945,7 +1996,140 @@ def edit_schedule_interactive(manager):
 			return
 	
 	print("✓ Schedule updated")
-
+	
+def delete_schedule_entry_interactive(manager):
+	"""Interactive single schedule entry deletion"""
+	print("\n🗑️  Delete Schedule Entry")
+	
+	manager.list_schedules()
+	
+	if not manager.schedules:
+		print("❌ No schedules to delete")
+		return
+	
+	# Get date
+	date = input("\nEnter date (YYYY-MM-DD) or 'default': ").strip()
+	
+	if date not in manager.schedules:
+		print(f"❌ No schedule found for {date}")
+		return
+	
+	schedule_list = manager.schedules[date]
+	
+	if not schedule_list:
+		print(f"❌ No schedules in {date}")
+		return
+	
+	# Show schedules for this date
+	print(f"\n📋 Schedules in {date}:")
+	print("-" * 80)
+	for i, schedule in enumerate(schedule_list):
+		name = schedule.get('name', 'Unnamed')
+		start = f"{schedule.get('start_hour', '0')}:{schedule.get('start_min', '0').zfill(2)}"
+		end = f"{schedule.get('end_hour', '0')}:{schedule.get('end_min', '0').zfill(2)}"
+		enabled = "✓" if schedule.get('enabled') == '1' else "✗"
+		print(f"  {i}. {enabled} {name:30s} | {start}-{end}")
+	print("-" * 80)
+	
+	# Handle single schedule case
+	if len(schedule_list) == 1:
+		print(f"\n⚠️  This is the only schedule in {date}.")
+		print("Deleting it will leave the file with no schedules.")
+		print("\nOptions:")
+		print("  1. Delete entry (file will be empty)")
+		print("  2. Delete entire file")
+		print("  0. Cancel")
+		
+		option = input("\nChoose option (0-2): ").strip()
+		
+		if option == "0":
+			return
+		elif option == "1":
+			# Delete entry, leave empty file
+			manager.schedules[date] = []
+			print(f"✓ Deleted schedule entry. {date} now has no schedules.")
+			print("💡 Save and push to GitHub, or add new schedules to this date")
+			return
+		elif option == "2":
+			# Delete entire file
+			manager.delete_schedule_file(date)
+			return
+		else:
+			print("❌ Invalid choice")
+			return
+	
+	# Multiple schedules - allow selection
+	print("\nOptions:")
+	print("  - Enter schedule number to delete (e.g., 0, 1, 2)")
+	print("  - Enter multiple numbers to delete (e.g., 0,2,4)")
+	print("  - Type 'all' to delete all schedules in this file")
+	print("  - Type 'cancel' to go back")
+	
+	selection = input("\nSelection: ").strip()
+	
+	if selection.lower() == 'cancel':
+		return
+	
+	if selection.lower() == 'all':
+		# Delete all schedules (delete file)
+		confirm = input(f"⚠️  Delete all {len(schedule_list)} schedule(s) in {date}? (y/n): ").strip().lower()
+		if confirm == 'y':
+			manager.delete_schedule_file(date)
+		else:
+			print("Cancelled")
+		return
+	
+	# Parse selection
+	try:
+		# Handle comma-separated list
+		if ',' in selection:
+			indices = [int(x.strip()) for x in selection.split(',')]
+		else:
+			indices = [int(selection)]
+		
+		# Validate indices
+		valid_indices = [i for i in indices if 0 <= i < len(schedule_list)]
+		
+		if not valid_indices:
+			print("❌ No valid schedule numbers")
+			return
+		
+		# Show what will be deleted
+		print(f"\n⚠️  Will delete {len(valid_indices)} schedule(s):")
+		for i in sorted(valid_indices):
+			schedule = schedule_list[i]
+			name = schedule.get('name', 'Unnamed')
+			start = f"{schedule.get('start_hour', '0')}:{schedule.get('start_min', '0').zfill(2)}"
+			end = f"{schedule.get('end_hour', '0')}:{schedule.get('end_min', '0').zfill(2)}"
+			print(f"  - {name} ({start}-{end})")
+		
+		confirm = input("\nConfirm deletion? (y/n): ").strip().lower()
+		
+		if confirm != 'y':
+			print("Cancelled")
+			return
+		
+		# Delete in reverse order to maintain indices
+		for i in sorted(valid_indices, reverse=True):
+			deleted = schedule_list.pop(i)
+			print(f"✓ Deleted: {deleted.get('name', 'Unnamed')}")
+		
+		# Check if file is now empty
+		if not schedule_list:
+			print(f"\n⚠️  {date} now has no schedules.")
+			delete_file = input("Delete the empty file? (y/n): ").strip().lower()
+			if delete_file == 'y':
+				manager.delete_schedule_file(date)
+			else:
+				print(f"Keeping empty file for {date}")
+		else:
+			print(f"\n✓ {len(schedule_list)} schedule(s) remaining in {date}")
+		
+		print("💡 Remember to save (option 12) and push to GitHub")
+		
+	except ValueError:
+		print("❌ Invalid selection")
+	
 
 def delete_schedule_file_interactive(manager):
 	"""Interactive schedule file deletion"""
@@ -1978,6 +2162,50 @@ def validate_all_schedules(manager):
 	issues = []
 	
 	for date_key, schedule_list in manager.schedules.items():
+		# Check for duplicate names within this file
+		name_counts = {}
+		for schedule in schedule_list:
+			name = schedule.get('name', 'Unnamed')
+			name_counts[name] = name_counts.get(name, 0) + 1
+		
+		# Report duplicates
+		for name, count in name_counts.items():
+			if count > 1:
+				issues.append(
+					f"{date_key}: Duplicate schedule name '{name}' appears {count} times. "
+					f"Only the last one will be active!"
+				)
+		
+		# Skip default for day-of-week validation
+		if date_key == 'default':
+			# Validate default schedules
+			for i, schedule in enumerate(schedule_list):
+				try:
+					name = schedule['name']
+					days = schedule['days']
+					start_time = f"{schedule['start_hour']}:{schedule['start_min'].zfill(2)}"
+					end_time = f"{schedule['end_hour']}:{schedule['end_min'].zfill(2)}"
+					image = schedule['image']
+					
+					valid, errors = ScheduleValidator.validate_schedule(name, days, start_time, end_time, image)
+					
+					if not valid:
+						issues.append(f"default - {name}: {', '.join(errors)}")
+						
+				except Exception as e:
+					issues.append(f"default - Schedule {i}: {e}")
+			continue
+		
+		# Validate date format and get day of week for date-specific schedules
+		try:
+			date_obj = datetime.strptime(date_key, '%Y-%m-%d')
+			expected_day = str(date_obj.weekday() + 1)  # 1=Monday, 7=Sunday
+			day_name = DAY_NAMES[expected_day]
+		except ValueError:
+			issues.append(f"{date_key}: Invalid date format")
+			continue
+		
+		# Validate each schedule
 		for i, schedule in enumerate(schedule_list):
 			try:
 				name = schedule['name']
@@ -1986,10 +2214,20 @@ def validate_all_schedules(manager):
 				end_time = f"{schedule['end_hour']}:{schedule['end_min'].zfill(2)}"
 				image = schedule['image']
 				
+				# Check if days includes the correct day of week
+				if expected_day not in days:
+					issues.append(
+						f"{date_key} ({day_name}) - {name}: "
+						f"Days '{days}' does not include day {expected_day} ({day_name}). "
+						f"Schedule will not run on {date_key}!"
+					)
+				
+				# Standard validation
 				valid, errors = ScheduleValidator.validate_schedule(name, days, start_time, end_time, image)
 				
 				if not valid:
 					issues.append(f"{date_key} - {name}: {', '.join(errors)}")
+					
 			except Exception as e:
 				issues.append(f"{date_key} - Schedule {i}: {e}")
 	
@@ -1997,26 +2235,94 @@ def validate_all_schedules(manager):
 		print("⚠️  Found issues:")
 		for issue in issues:
 			print(f"   - {issue}")
+		return False
 	else:
 		print("✓ All schedules valid!")
-
-
-def show_available_images(image_type):
-	"""Display all available images"""
-	images = get_available_images(image_type)
-	folder = EVENTS_IMAGES_FOLDER if image_type == "events" else SCHEDULES_IMAGES_FOLDER
+		return True
+		
+def auto_fix_schedule_days(manager):
+	"""Auto-fix day-of-week mismatches in date-specific schedules"""
+	print("\n🔧 Auto-Fix Schedule Days")
+	print("="*80)
 	
-	if not images:
-		print(f"\n⚠️  No images found in: {folder}")
-		print("Update paths in the script configuration")
+	fixes_needed = []
+	
+	for date_key, schedule_list in manager.schedules.items():
+		# Skip default
+		if date_key == 'default':
+			continue
+		
+		# Get expected day
+		try:
+			date_obj = datetime.strptime(date_key, '%Y-%m-%d')
+			expected_day = str(date_obj.weekday() + 1)
+			day_name = DAY_NAMES[expected_day]
+		except:
+			continue
+		
+		# Check each schedule
+		for schedule in schedule_list:
+			if expected_day not in schedule['days']:
+				fixes_needed.append({
+					'date': date_key,
+					'day_name': day_name,
+					'expected_day': expected_day,
+					'schedule': schedule,
+					'current_days': schedule['days']
+				})
+	
+	if not fixes_needed:
+		print("✓ No day mismatches found! All schedules are correct.")
 		return
 	
-	print(f"\n🖼️  Available {image_type.title()} Images ({len(images)} files):")
-	print(f"    Folder: {folder}")
-	print("-" * 60)
-	for i, img in enumerate(images, 1):
-		print(f"{i:3d}. {img}")
-	print("-" * 60)
+	print(f"\nFound {len(fixes_needed)} schedule(s) with day mismatches:\n")
+	
+	for i, fix in enumerate(fixes_needed, 1):
+		current_day_names = [DAY_NAMES[d] for d in fix['current_days'] if d in DAY_NAMES]
+		print(f"{i}. {fix['date']} ({fix['day_name']}) - {fix['schedule']['name']}")
+		print(f"   Current days: {','.join(current_day_names)} ({fix['current_days']})")
+		print(f"   Should include: {fix['day_name']} (day {fix['expected_day']})")
+	
+	print("\nFix options:")
+	print("  1. Set all to correct single day (recommended for date-specific)")
+	print("  2. Add correct day to existing days (keep current + add missing)")
+	print("  0. Cancel")
+	
+	choice = input("\nChoose option (0-2): ").strip()
+	
+	if choice == "0":
+		return
+	
+	elif choice == "1":
+		# Replace with single correct day
+		confirm = input(f"\nSet all {len(fixes_needed)} schedules to their correct single day? (y/n): ").strip().lower()
+		
+		if confirm == 'y':
+			for fix in fixes_needed:
+				fix['schedule']['days'] = fix['expected_day']
+			
+			print(f"✓ Fixed {len(fixes_needed)} schedule(s) - set to single day")
+			print("💡 Remember to save (option 10) and push to GitHub")
+		else:
+			print("Cancelled")
+	
+	elif choice == "2":
+		# Add missing day to existing
+		confirm = input(f"\nAdd correct day to all {len(fixes_needed)} schedules? (y/n): ").strip().lower()
+		
+		if confirm == 'y':
+			for fix in fixes_needed:
+				current_days = set(fix['current_days'])
+				current_days.add(fix['expected_day'])
+				fix['schedule']['days'] = ''.join(sorted(current_days))
+			
+			print(f"✓ Fixed {len(fixes_needed)} schedule(s) - added missing day")
+			print("💡 Remember to save (option 10) and push to GitHub")
+		else:
+			print("Cancelled")
+	
+	else:
+		print("❌ Invalid choice")
 
 
 # ============================================================================
