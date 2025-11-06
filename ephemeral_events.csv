@@ -3,8 +3,6 @@
 # TopLine = displays on TOP of screen
 # BottomLine = displays on BOTTOM (usually the name)
 # Times are optional (24-hour format, 0-23). If omitted, event shows all day.
-2025-10-31,Hola,Abuelos,plane.bmp,BLUE
-2025-11-02,Fiesta,Tiago,jack_skellington_party.bmp,PURPLE
 2025-11-09,Fiesta,Allie,party.bmp,PINK,4,13
 2025-11-10,Buen,Viaje,plane.bmp,BLUE,0,17
 2025-11-10,H. Prog.,Tmrw,guidepost_holiday.bmp,LILAC,20,23
