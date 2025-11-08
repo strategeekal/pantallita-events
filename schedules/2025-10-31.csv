@@ -2,13 +2,5 @@
 # enabled: 1=true, 0=false
 # days: 0-6 for Mon-Sun (e.g., "01234" = Mon-Fri)
 # progressbar: 1=true, 0=false
-Get Dressed,1,4,7,0,7,15,get_dressed.bmp,1
-Eat Breakfast,1,4,7,15,7,40,breakfast.bmp,1
-Toilet and Teeth AM,1,4,7,40,7,50,toilet_and_teeth.bmp,1
-Dress Up,1,4,15,30,17,00,get_dressed_halloween.bmp,1
-Trick or Treating,1,4,17,00,20,00,trick_or_treat.bmp,1
-Bath Time,1,4,20,00,20,30,bath_time.bmp,1
-Pajamas On,1,4,20,30,20,45,get_dressed_night.bmp,1
-Toilet and Teeth PM,1,4,20,45,20,55,toilet_and_teeth.bmp,1
-Sleep,1,4,20,55,21,30,bed.bmp,0
-Go to School,1,4,7,50,8,30,go_to_school.bmp,1
+New Item,1,3,9,0,17,0,go_to_school.bmp,0
+nuevo item,1,3,17,0,18,0,breakfast.bmp,1
