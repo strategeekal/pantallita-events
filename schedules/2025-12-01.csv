@@ -1,8 +1,0 @@
-# Format: name,enabled,days,start_hour,start_min,end_hour,end_min,image,progressbar
-# enabled: 1=true, 0=false
-# days: 0-6 for Mon-Sun (e.g., "01234" = Mon-Fri)
-# progressbar: 1=true, 0=false
-Gimnastics,1,0,9,0,9,15,gimnastics.bmp,1
-Dress Up,1,0,9,15,9,45,get_dressed_halloween.bmp,0
-Trick or Treat,1,0,9,45,10,15,trick_or_treat.bmp,1
-Lets Go,1,0,10,15,10,30,scooter.bmp,1
