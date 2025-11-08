@@ -1,0 +1,8 @@
+# Format: name,enabled,days,start_hour,start_min,end_hour,end_min,image,progressbar
+# enabled: 1=true, 0=false
+# days: 0-6 for Mon-Sun (e.g., "01234" = Mon-Fri)
+# progressbar: 1=true, 0=false
+Art Class,1,2,8,0,9,0,art class.bmp,1
+Trick or Treat,1,2,9,0,10,30,trick_or_treat.bmp,1
+Dress Up,1,2,10,30,11,0,get_dressed_halloween.bmp,1
+Go,1,2,11,0,12,0,scooter.bmp,1
