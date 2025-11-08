@@ -1,50 +1,5 @@
-# Ephemeral Events - Auto-generated
 # Format: YYYY-MM-DD,TopLine,BottomLine,Image,Color[,StartHour,EndHour]
 # TopLine = displays on TOP of screen
 # BottomLine = displays on BOTTOM (usually the name)
 # Times are optional (24-hour format, 0-23). If omitted, event shows all day.
-2025-11-09,Fiesta,Allie,party.bmp,PINK,4,13
-2025-11-10,Buen,Viaje,plane.bmp,BLUE,0,17
-2025-11-10,H. Prog.,Tmrw,guidepost_holiday.bmp,LILAC,20,23
-2025-11-11,H. Prog.,Today,guidepost_holiday.bmp,BUGAMBILIA,5,18
-2025-11-15,Fiesta,Nico Coshi,party.bmp,AQUA,4,18
-2025-11-26,No School,2 days,no_school.bmp,PURPLE,20,23
-2025-11-27,Happy,Thanksgiving,thanksgiving.bmp,ORANGE
-2025-12-21,Hello,Winter,winter.bmp,RED
-2025-12-21,H. Prog.,Tmrw,guidepost_holiday.bmp,LILAC,20,23
-2025-12-22,H. Prog.,Today,guidepost_holiday.bmp,LILAC,5,18
-2025-12-22,H. Prog.,Tmrw,guidepost_holiday.bmp,LILAC,20,23
-2025-12-23,H. Prog.,Today,guidepost_holiday.bmp,LILAC,5,18
-2025-12-23,No School,Tmrw,no_school.bmp,PURPLE,20,23
-2025-12-24,No School,Today,no_school.bmp,PURPLE,5,18
-2025-12-24,No School,Tmrw,no_school.bmp,PURPLE,20,23
-2025-12-25,No School,Today,no_school.bmp,PURPLE,5,18
-2025-12-25,H. Prog.,Tmrw,guidepost_holiday.bmp,LILAC,20,23
-2025-12-26,H. Prog.,Today,guidepost_holiday.bmp,LILAC,5,18
-2025-12-28,H. Prog.,Tmrw,guidepost_holiday.bmp,LILAC,20,23
-2025-12-29,H. Prog.,Today,guidepost_holiday.bmp,LILAC,5,18
-2025-12-29,H. Prog.,Tmrw,guidepost_holiday.bmp,LILAC,20,23
-2025-12-30,H. Prog.,Today,guidepost_holiday.bmp,LILAC,5,18
-2025-12-30,H. Prog.,Tmrw,guidepost_holiday.bmp,LILAC,20,23
-2025-12-31,H. Prog.,Today,guidepost_holiday.bmp,LILAC,5,18
-2025-12-31,No School,Tmrw,no_school.bmp,PURPLE,20,23
-2026-01-01,No School,Today,no_school.bmp,PURPLE,5,18
-2026-01-01,H. Prog.,Tmrw,guidepost_holiday.bmp,LILAC,20,23
-2026-01-02,H. Prog.,Today,guidepost_holiday.bmp,LILAC,5,18
-2026-01-18,No School,Tmrw,no_school.bmp,PURPLE,20,23
-2026-01-19,No School,Today,no_school.bmp,PURPLE,5,18
-2026-02-15,H. Prog.,Tmrw,guidepost_holiday.bmp,LILAC,20,23
-2026-02-16,H. Prog.,Today,guidepost_holiday.bmp,LILAC,5,18
-2026-03-05,No School,Tmrw,no_school.bmp,PURPLE,20,23
-2026-03-06,No School,Today,no_school.bmp,PURPLE,5,18
-2026-03-20,Hello,Spring,spring.bmp,PINK
-2026-05-24,No School,Tmrw,no_school.bmp,PURPLE,20,23
-2026-05-25,No School,Today,no_school.bmp,PURPLE,5,18
-2026-06-18,No School,Tmrw,no_school.bmp,PURPLE,20,23
-2026-06-19,No School,Today,no_school.bmp,PURPLE,5,18
-2026-06-21,Hello,Summer,summer.bmp,MINT
-2026-07-02,No School,Tmrw,no_school.bmp,PURPLE,20,23
-2026-07-03,No School,Today,no_school.bmp,PURPLE,5,18
-2026-09-22,Fall,Begins,fall.bmp,ORANGE
-2026-11-26,Happy,Thanksgiving,thanksgiving.bmp,ORANGE
-2025-12-04,ARTIC,Party,christmas.bmp,RED
+2025-11-20,Prueba,Uno,day_of_the_death.bmp,ORANGE,7,13
