@@ -10,6 +10,6 @@ Quiet Time,1,56,12,30,13,30,quiet_time.bmp,1
 Eat Dinner,1,0123456,18,30,19,0,dinner.bmp,1
 Bath Time,1,0123456,19,0,19,30,bath_time.bmp,1
 Pajamas On,1,0123456,19,30,19,40,get_dressed_night.bmp,1
-Toilet and Teeth PM,1,0123456,19,40,19,50,toilet_and_teeth.bmp,1
+Toilet and Teeth PM,1,,19,40,19,50,toilet_and_teeth.bmp,1
 Story and Sleep,1,0123456,19,50,20,5,story_and_bed.bmp,1
 Sleep,1,0123456,20,5,20,35,bed.bmp,0
