@@ -2,7 +2,7 @@
 # enabled: 1=true, 0=false
 # days: 0-6 for Mon-Sun (e.g., "01234" = Mon-Fri)
 # progressbar: 1=true, 0=false
-Get Dressed,1,0,1,2,3,4,5,1,2,3,4,art class.bmp,1
+Get Dressed,1,0123456,7,0,7,15,get_dressed.bmp,1
 Eat Breakfast,1,0123456,7,15,7,40,breakfast.bmp,1
 Toilet and Teeth AM,1,0123456,7,40,7,50,toilet_and_teeth.bmp,1
 Go to School,1,01234,7,50,8,15,go_to_school.bmp,1
