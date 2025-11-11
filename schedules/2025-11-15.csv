@@ -1,0 +1,6 @@
+# Format: name,enabled,days,start_hour,start_min,end_hour,end_min,image,progressbar
+# enabled: 1=true, 0=false
+# days: 0-6 for Mon-Sun (e.g., "01234" = Mon-Fri)
+# progressbar: 1=true, 0=false
+Item 1,1,5,9,0,9,20,breakfast.bmp,1
+Item 2,1,5,9,20,9,35,dinner.bmp,0
