@@ -2,14 +2,14 @@
 **Version 1.0.0**
 
 A file and image repository used by RGB matrix displays to gather changing event and daily schedule information remotely
-```
+---
 
 ## CSV File Formats
 
 ### Events CSV (`ephemeral_events.csv`)
 
 **Format:**
-```
+
 YYYY-MM-DD,TopLine,BottomLine,Image,Color[,StartHour,EndHour]
 ```
 
