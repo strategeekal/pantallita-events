@@ -1,0 +1,8 @@
+# Format: name,enabled,days,start_hour,start_min,end_hour,end_min,image,progressbar
+# enabled: 1=true, 0=false
+# days: 0-6 for Mon-Sun (e.g., "01234" = Mon-Fri)
+# progressbar: 1=true, 0=false
+Baseball,1,2,8,0,8,15,baseball.bmp,1
+Football,1,2,8,15,8,30,football.bmp,1
+Soccer,1,2,8,30,8,45,soccer.bmp,1
+Halloween,1,2,15,45,16,30,get_dressed_halloween.bmp,0
