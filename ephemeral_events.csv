@@ -2,7 +2,7 @@
 # TopLine = displays on TOP of screen
 # BottomLine = displays on BOTTOM (usually the name)
 # Times are optional (24-hour format, 0-23). If omitted, event shows all day.
-2025-11-15,Fiesta,Nico Coshi,party.bmp,AQUA,4,18
+2025-11-15,Fiesta,Nico Coshi,donkey_pinata.bmp,AQUA,4,18
 2025-11-26,No School,2 days,no_school.bmp,PURPLE,20,23
 2025-11-27,Happy,Thanksgiving,thanksgiving.bmp,ORANGE
 2025-12-21,Hello,Winter,winter.bmp,RED
