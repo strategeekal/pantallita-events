@@ -5,7 +5,7 @@
 Get Dressed2,1,1,7,45,8,0,get_dressed.bmp,1
 Get Dressed,1,1,8,0,8,30,breakfast.bmp,1
 Toilet and Teeth AM,1,1,8,30,8,40,toilet_and_teeth.bmp,1
-Go Out,1,1,8,20,9,0,scooter.bmp,1
+Go Out,1,1,8,40,9,0,scooter.bmp,1
 Quiet Time,1,1,13,30,14,30,quiet_time.bmp,1
 Eat Dinner,1,1,18,30,19,0,dinner.bmp,1
 Bath Time,1,1,19,0,19,30,art class.bmp,1
