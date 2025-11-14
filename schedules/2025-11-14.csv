@@ -2,16 +2,15 @@
 # enabled: 1=true, 0=false
 # days: 0-6 for Mon-Sun (e.g., "01234" = Mon-Fri)
 # progressbar: 1=true, 0=false
-RAPID TEST1,1,4,15,25,15,35,get_dressed_night.bmp,1
-RAPID TEST2,1,4,15,35,15,50,art class.bmp,1
-RAPID TEST3,1,4,15,50,16,5,get_dressed_halloween.bmp,1
-RAPID TEST4,1,4,16,5,16,20,get_dressed.bmp,1
-RAPID TEST5,1,4,16,20,16,30,toilet_and_teeth.bmp,1
-RAPID TEST6,1,4,16,30,16,45,gimnastics.bmp,1
-RAPID TEST7,1,4,16,45,17,0,story_and_bed.bmp,1
-RAPID TEST8,1,4,17,0,17,15,soccer.bmp,1
-RAPID TEST9,1,4,17,15,17,30,bed.bmp,1
-RAPID TEST10,1,4,17,30,17,0,breakfast.bmp,1
-HRTEST 1of2,1,4,17,30,18,30,basketball.bmp,1
-HRTEST 2of2,1,4,18,30,19,30,baseball.bmp,1
-LONG TEST,1,4,19,50,21,0,art class.bmp,1
+RAPID TEST1,1,4,17,35,17,50,art class.bmp,1
+RAPID TEST2,1,4,17,50,18,5,get_dressed_halloween.bmp,1
+RAPID TEST3,1,4,18,5,18,20,get_dressed.bmp,1
+RAPID TEST4,1,4,18,20,18,30,toilet_and_teeth.bmp,1
+RAPID TEST5,1,4,18,30,18,45,gimnastics.bmp,1
+RAPID TEST6,1,4,18,45,19,0,story_and_bed.bmp,1
+RAPID TEST7,1,4,19,0,19,15,soccer.bmp,1
+RAPID TEST8,1,4,19,15,19,30,bed.bmp,1
+RAPID TEST9,1,4,19,30,19,45,breakfast.bmp,1
+2HR TEST,1,4,20,20,22,20,basketball.bmp,1
+RAPID TEST10,1,4,19,45,20,0,bath_time.bmp,0
+1HR TEST,1,4,22,40,23,40,dinner.bmp,0
