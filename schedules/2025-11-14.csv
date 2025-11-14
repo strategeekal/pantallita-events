@@ -1,0 +1,18 @@
+# Format: name,enabled,days,start_hour,start_min,end_hour,end_min,image,progressbar
+# enabled: 1=true, 0=false
+# days: 0-6 for Mon-Sun (e.g., "01234" = Mon-Fri)
+# progressbar: 1=true, 0=false
+RAPID TEST1,1,4,9,5,9,10,art class.bmp,0
+RAPID TEST2,1,4,9,10,9,25,baseball.bmp,1
+RAPID TEST3,1,4,9,25,9,40,basketball.bmp,0
+RAPID TEST4,1,4,9,40,9,55,bath_time.bmp,1
+RAPID TEST5,1,4,9,55,10,10,bed.bmp,0
+RAPID TEST6,1,4,10,10,10,25,breakfast.bmp,1
+RAPID TEST7,1,4,10,25,10,40,dinner.bmp,1
+RAPID TEST8,1,4,10,40,10,55,football.bmp,0
+RAPID TEST9,1,4,10,55,11,10,get_dressed.bmp,1
+RAPID TEST10,1,4,11,10,11,25,get_dressed_halloween.bmp,0
+RAPID TEST11,1,4,11,25,11,40,gimnastics.bmp,1
+1HR TEST 1OF2,1,4,12,20,13,20,go_to_school.bmp,0
+1HR TEST 2OF2,1,4,13,20,14,20,quiet_time.bmp,1
+2 HOUR TEST,1,4,14,50,16,50,scooter.bmp,1
