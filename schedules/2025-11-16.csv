@@ -2,5 +2,5 @@
 # enabled: 1=true, 0=false
 # days: 0-6 for Mon-Sun (e.g., "01234" = Mon-Fri)
 # progressbar: 1=true, 0=false
-New Item,1,6,1,45,1,55,,1
-New Item 1,1,6,1,55,2,10,baseball.bmp,1
+New Item,1,6,2,45,2,55,bath_time.bmp,1
+New Item 1,1,6,2,55,3,20,baseball.bmp,1
