@@ -1,7 +1,0 @@
-# Format: name,enabled,days,start_hour,start_min,end_hour,end_min,image,progressbar
-# enabled: 1=true, 0=false
-# days: 0-6 for Mon-Sun (e.g., "01234" = Mon-Fri)
-# progressbar: 1=true, 0=false
-New Item,1,6,15,45,15,55,,1
-New Item 1,1,6,15,55,15,20,baseball.bmp,1
-New Item 2,1,6,17,55,18,20,baseball.bmp,1
