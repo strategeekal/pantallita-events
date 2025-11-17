@@ -1,0 +1,6 @@
+# Format: name,enabled,days,start_hour,start_min,end_hour,end_min,image,progressbar
+# enabled: 1=true, 0=false
+# days: 0-6 for Mon-Sun (e.g., "01234" = Mon-Fri)
+# progressbar: 1=true, 0=false
+New Item,1,6,21,20,21,30,get_dressed_halloween.bmp,1
+New Item 1,1,6,21,30,21,35,trick_or_treat.bmp,1
