@@ -14,4 +14,4 @@ show_scheduled_displays,1
 show_events_in_between_schedules,1
 
 # Safety features
-delayed_start,1
+delayed_start,0
