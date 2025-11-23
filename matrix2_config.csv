@@ -8,7 +8,6 @@ show_weather,1
 show_forecast,1
 show_events,1
 show_stocks,1
-stocks_display_frequency,3
 
 # Display elements
 show_weekday_indicator,1
@@ -20,3 +19,5 @@ night_mode_minimal_display,1
 delayed_start,0
 # stocks_respect_market_hours: 1 = only show during market hours (9:30am-5:30pm ET weekdays), 0 = always show (for testing)
 stocks_respect_market_hours,0
+# Display frequency = number of cycles before next set of stock prices is shown
+stocks_display_frequency,3
