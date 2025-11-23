@@ -2,6 +2,5 @@
 # Format: ticker,company_name
 # Stocks are displayed in cycles of 3 on the matrix
 
-# Cycle 1 (stocks 1-2)
-AAPL,Apple
+# Cycle 1 (stocks 1-1)
 GOOGL,Google
