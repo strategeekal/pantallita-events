@@ -3,13 +3,13 @@
 # Stocks are displayed in cycles of 3 on the matrix
 
 # Cycle 1 (stocks 1-3)
+CRM,Salesforce
 NFLX,Netflix
 DIS,Disney
-NVDA,Nvidia
 
 # Cycle 2 (stocks 4-6)
+NVDA,Nvidia
 ORCL,Oracle Corporation
-CRM,Salesforce
 AMD,AMD
 
 # Cycle 3 (stocks 7-9)
