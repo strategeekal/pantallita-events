@@ -3,12 +3,12 @@
 # Stocks are displayed in cycles of 3 on the matrix
 
 # Cycle 1 (stocks 1-3)
+LUMN,Lumen Technologies, Inc.
 CRM,Salesforce
 SPY,S&P 500 ETF
-FDIG,Fidelity Crypto Industry and Digital Payments ETF
 
 # Cycle 2 (stocks 4-6)
-LUMN,Lumen Technologies, Inc.
+FDIG,Fidelity Crypto Industry and Digital Payments ETF
 IBT,iShares Bitcoin Trust ETF
 AAPL,Apple
 
