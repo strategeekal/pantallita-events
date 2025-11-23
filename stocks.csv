@@ -3,8 +3,8 @@
 # Stocks are displayed in cycles of 3 on the matrix
 
 # Cycle 1 (stocks 1-3)
-AMD,AMD
 AAPL,Apple
+AMD,AMD
 GOOGL,Google
 
 # Cycle 2 (stocks 4-6)
