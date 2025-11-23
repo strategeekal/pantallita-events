@@ -4,8 +4,8 @@
 
 # Cycle 1 (stocks 1-3)
 CRM,Salesforce
-AAPL,Apple
 AMD,AMD
+AAPL,Apple
 
 # Cycle 2 (stocks 4-6)
 GOOGL,Google
