@@ -3,11 +3,10 @@
 # Stocks are displayed in cycles of 3 on the matrix
 
 # Cycle 1 (stocks 1-3)
-USD/MXN,Mexican Peso
 CRM,Salesforce
 SPY,S&P 500 ETF
-
-# Cycle 2 (stocks 4-6)
 FDIG,Fidelity Crypto Industry and Digital Payments ETF
+
+# Cycle 2 (stocks 4-5)
 AAPL,Apple
 GOOGL,Google
