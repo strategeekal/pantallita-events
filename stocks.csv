@@ -5,14 +5,14 @@
 # Cycle 1 (stocks 1-3)
 NFLX,Netflix
 NVDA,Nvidia
-DIS,Disney
+ORCL,Oracle Corporation
 
 # Cycle 2 (stocks 4-6)
+DIS,Disney
 CRM,Salesforce
 AMD,AMD
-AAPL,Apple
 
 # Cycle 3 (stocks 7-9)
+AAPL,Apple
 GOOGL,Google
-ORCL,Oracle Corporation
 MSFT,Microsoft
