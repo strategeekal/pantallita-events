@@ -8,14 +8,14 @@ IBT,iShares Bitcoin Trust ETF
 SOXQ,Semiconductors
 
 # Cycle 2 (stocks 4-6)
+USD/MXN,Mexican Peso
 CRM,Salesforce
 SPY,S&P 500 ETF
-FDIG,Fidelity Crypto Industry and Digital Payments ETF
 
 # Cycle 3 (stocks 7-9)
+FDIG,Fidelity Crypto Industry and Digital Payments ETF
 AAPL,Apple
 GOOGL,Google
-MSFT,Microsoft
 
 # Cycle 4 (stocks 10-10)
-USD/MXN,Mexican Peso
+MSFT,Microsoft
