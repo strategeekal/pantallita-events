@@ -8,11 +8,11 @@ GOOGL,Google
 NVDA,Nvidia
 
 # Cycle 2 (stocks 4-6)
-MSFT,Microsoft
 CRM,Salesforce
 AMD,AMD
+DIS,Disney
 
 # Cycle 3 (stocks 7-9)
-DIS,Disney
 NFLX,Netflix
 ORCL,Oracle Corporation
+MSFT,Microsoft
