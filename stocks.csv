@@ -5,17 +5,17 @@
 # Cycle 1 (stocks 1-3)
 LUMN,Lumen Technologies, Inc.
 IBT,iShares Bitcoin Trust ETF
-CRM,Salesforce
+SOXQ,Semiconductors
 
 # Cycle 2 (stocks 4-6)
+CRM,Salesforce
 SPY,S&P 500 ETF
 FDIG,Fidelity Crypto Industry and Digital Payments ETF
-AAPL,Apple
 
 # Cycle 3 (stocks 7-9)
+AAPL,Apple
 GOOGL,Google
 MSFT,Microsoft
-USD/MXN,Mexican Peso
 
 # Cycle 4 (stocks 10-10)
-SOXQ,Semiconductors
+USD/MXN,Mexican Peso
