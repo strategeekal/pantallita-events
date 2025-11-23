@@ -14,6 +14,9 @@ show_weekday_indicator,1
 show_scheduled_displays,1
 show_events_in_between_schedules,1
 night_mode_minimal_display,1
+# stocks_respect_market_hours: 1 = only show during market hours (9:30am-5:30pm ET weekdays), 0 = always show (for testing)
+stocks_respect_market_hours,0
+
 
 # Safety features
 delayed_start,0
