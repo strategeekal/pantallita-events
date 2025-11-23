@@ -5,11 +5,11 @@
 # Cycle 1 (stocks 1-3)
 AAPL,Apple
 GOOGL,Google
-NVDA,Nvidia
+CRM,Salesforce
 
 # Cycle 2 (stocks 4-6)
-CRM,Salesforce
 AMD,AMD
+NVDA,Nvidia
 DIS,Disney
 
 # Cycle 3 (stocks 7-9)
