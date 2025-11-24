@@ -17,6 +17,7 @@ SOXQ,Invesco PHLX Semiconductor ETF,stock,,
 LUMN,Lumen Technologies Inc.,stock,,
 IBIT,iShares Bitcoin Trust,stock,,
 
-# Cycle 4 (stocks 10-11)
+# Cycle 4 (stocks 10-12)
 BTC/USD,Bitcoin US Dollar,forex,BTC,crypto
 ETH/USD,Ethereum US Dollar,forex,ETH,crypto
+KMD/USD,Komodo US Dollar,forex,KMD,Crypto
