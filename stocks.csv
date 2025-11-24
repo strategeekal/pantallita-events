@@ -1,23 +1,23 @@
 # Stock Tickers
-# Format: symbol,name,type,display_name,category
+# Format: symbol,name,type,display_name
 # Stocks are displayed in cycles of 3 on the matrix
 
 # Cycle 1 (stocks 1-3)
-USD/MXN,US Dollar / Mexican Peso,forex,MXN,forex
-EUR/MXN,Euro / Mexican Peso,forex,EUR,forex
-CAD/MXN,Canadian Dollar / Mexican Peso,forex,CAD,forex
+USD/MXN,US Dollar / Mexican Peso,forex,MXN
+EUR/MXN,Euro / Mexican Peso,forex,EUR
+CAD/MXN,Canadian Dollar / Mexican Peso,forex,CAD
 
 # Cycle 2 (stocks 4-6)
-CRM,Salesforce Inc.,stock,,
-SPY,SPDR S&P 500 ETF Trust,stock,,
-FDIG,Fidelity Crypto Industry & Digital Payments ETF,stock,,
+CRM,Salesforce Inc.,stock,
+SPY,SPDR S&P 500 ETF Trust,stock,
+FDIG,Fidelity Crypto Industry & Digital Payments ETF,stock,
 
 # Cycle 3 (stocks 7-9)
-SOXQ,Invesco PHLX Semiconductor ETF,stock,,
-LUMN,Lumen Technologies Inc.,stock,,
-IBIT,iShares Bitcoin Trust,stock,,
+SOXQ,Invesco PHLX Semiconductor ETF,stock,
+LUMN,Lumen Technologies Inc.,stock,
+IBIT,iShares Bitcoin Trust,stock,
 
 # Cycle 4 (stocks 10-12)
-BTC/USD,Bitcoin US Dollar,forex,BTC,crypto
-ETH/USD,Ethereum US Dollar,forex,ETH,crypto
-XAU/USD,Gold Spot / US Dollar,forex,XAU,
+BTC/USD,Bitcoin US Dollar,crypto,BTC
+ETH/USD,Ethereum US Dollar,forex,ETH
+XAU/USD,Gold Spot / US Dollar,forex,XAU
