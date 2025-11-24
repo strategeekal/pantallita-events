@@ -20,4 +20,4 @@ IBIT,iShares Bitcoin Trust,stock,
 # Cycle 4 (stocks 10-12)
 BTC/USD,Bitcoin US Dollar,crypto,BTC
 ETH/USD,Ethereum US Dollar,crypto,ETH
-XAU/USD,Gold Spot / US Dollar,forex,XAU
+XAU/USD,Gold Spot / US Dollar,commodity,XAU
