@@ -10,12 +10,12 @@ FDIG,Fidelity Crypto Industry & Digital Payments ETF,stock,
 # Cycle 2 (stocks 4-6)
 SOXQ,Invesco PHLX Semiconductor ETF,stock,
 LUMN,Lumen Technologies Inc.,stock,
-USD/MXN,US Dollar / Mexican Peso,forex,MXN
+IBIT,iShares Bitcoin Trust,stock,
 
 # Cycle 3 (stocks 7-9)
+USD/MXN,US Dollar / Mexican Peso,forex,MXN
 EUR/MXN,Euro / Mexican Peso,forex,EUR
 CAD/MXN,Canadian Dollar / Mexican Peso,forex,CAD
-IBIT,iShares Bitcoin Trust,stock,
 
 # Cycle 4 (stocks 10-12)
 BTC/USD,Bitcoin US Dollar,crypto,BTC
