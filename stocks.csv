@@ -3,12 +3,12 @@
 # Stocks are displayed in cycles of 3 on the matrix
 
 # Cycle 1 (stocks 1-3)
+CRM,Salesforce Inc.,stock,
 USD/MXN,US Dollar / Mexican Peso,forex,MXN
 EUR/MXN,Euro / Mexican Peso,forex,EUR
-CAD/MXN,Canadian Dollar / Mexican Peso,forex,CAD
 
 # Cycle 2 (stocks 4-6)
-CRM,Salesforce Inc.,stock,
+CAD/MXN,Canadian Dollar / Mexican Peso,forex,CAD
 SPY,SPDR S&P 500 ETF Trust,stock,
 FDIG,Fidelity Crypto Industry & Digital Payments ETF,stock,
 
