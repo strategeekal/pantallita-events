@@ -3,11 +3,11 @@
 # Regular stocks displayed in cycles of 3, highlighted stocks shown individually
 # Display sequence follows CSV order: 3-stock group → highlighted → 3-stock group → ...
 
-# Display 1: Individual (highlighted)
+# Display 1: Cycle 1 (3 stocks)
+SPY,SPDR S&P 500 ETF Trust,stock,,0
+# Display 2: Individual (highlighted)
 CRM,Salesforce Inc.,stock,,1
 
-# Display 2: Cycle 1 (3 stocks)
-SPY,SPDR S&P 500 ETF Trust,stock,,0
 SOXQ,Invesco PHLX Semiconductor ETF,stock,,0
 IBIT,iShares Bitcoin Trust,stock,,0
 
