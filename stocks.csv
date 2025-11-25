@@ -19,10 +19,10 @@ USD/MXN,US Dollar / Mexican Peso,forex,MXN,0
 EUR/MXN,Euro / Mexican Peso,forex,EUR,0
 CAD/MXN,Canadian Dollar / Mexican Peso,forex,CAD,0
 
-# Display 5: Cycle 3 (3 stocks)
-ETH/USD,Ethereum US Dollar,crypto,ETH,0
-# Display 6: Individual (highlighted)
+# Display 5: Individual (highlighted)
 FDIG,Fidelity Crypto Industry & Digital Payments ETF,stock,,1
 
+# Display 6: Cycle 3 (3 stocks)
 XAU/USD,Gold Spot / US Dollar,commodity,XAU,0
+ETH/USD,Ethereum US Dollar,crypto,ETH,0
 LUMN,Lumen Technologies Inc.,stock,,0
