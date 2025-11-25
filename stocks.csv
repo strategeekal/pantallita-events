@@ -14,15 +14,15 @@ IBIT,iShares Bitcoin Trust,stock,,0
 # Display 3: Individual (highlighted)
 BTC/USD,Bitcoin US Dollar,crypto,BTC,1
 
-# Display 4: Individual (highlighted)
-FDIG,Fidelity Crypto Industry & Digital Payments ETF,stock,,1
-
-# Display 5: Cycle 2 (3 stocks)
+# Display 4: Cycle 2 (3 stocks)
 USD/MXN,US Dollar / Mexican Peso,forex,MXN,0
 EUR/MXN,Euro / Mexican Peso,forex,EUR,0
 CAD/MXN,Canadian Dollar / Mexican Peso,forex,CAD,0
 
-# Display 6: Cycle 3 (3 stocks)
+# Display 5: Cycle 3 (3 stocks)
 ETH/USD,Ethereum US Dollar,crypto,ETH,0
+# Display 6: Individual (highlighted)
+FDIG,Fidelity Crypto Industry & Digital Payments ETF,stock,,1
+
 XAU/USD,Gold Spot / US Dollar,commodity,XAU,0
 LUMN,Lumen Technologies Inc.,stock,,0
