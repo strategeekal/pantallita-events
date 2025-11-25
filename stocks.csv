@@ -25,6 +25,4 @@ BTC/USD,Bitcoin US Dollar,crypto,BTC,1
 # Display 6: Cycle 3 (3 stocks)
 ETH/USD,Ethereum US Dollar,crypto,ETH,0
 XAU/USD,Gold Spot / US Dollar,commodity,XAU,0
-# Display 7: Individual (highlighted)
-LUMN,Lumen Technologies Inc.,stock,,1
-
+LUMN,Lumen Technologies Inc.,stock,,0
