@@ -3,7 +3,7 @@
 # BottomLine = displays on BOTTOM (usually the name)
 # Times are optional (24-hour format, 0-23). If omitted, event shows all day.
 2025-11-26,No School,2 days,no_school.bmp,PURPLE
-2025-11-27,Happy,Thanksgiving,turkey.bmp,ORANGE
+2025-11-28,Happy,Thanksgiving,turkey.bmp,ORANGE
 2025-12-21,Hello,Winter,snowman.bmp,RED
 2025-12-21,H. Prog.,2 Days,guidepost_logo.bmp,LILAC,21,23
 2025-12-22,H. Prog.,Today,guidepost_logo.bmp,LILAC,5,18
