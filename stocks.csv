@@ -25,7 +25,7 @@ LUMN,Lumen Technologies Inc.,stock,,1
 # Display 6: Cycle 3 (3 stocks)
 ETH/USD,Ethereum US Dollar,crypto,ETH,0
 XAU/USD,Gold Spot / US Dollar,commodity,XAU,0
-XBR/USD,Brent Spot / US Dollar,commodity,BRENT,0
+GBP/MXN,British Pound / Mexican Peso,forex,GBP,0
 
 # Display 7: Individual (highlighted)
 BTC/USD,Bitcoin US Dollar,crypto,BTC,1
