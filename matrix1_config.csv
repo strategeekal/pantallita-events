@@ -5,7 +5,7 @@
 
 # Core displays
 show_weather,1
-show_forecast,0
+show_forecast,1
 show_events,1
 show_stocks,1
 show_transit,1
