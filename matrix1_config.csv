@@ -4,7 +4,7 @@
 # This file can be overridden by GitHub remote config at startup
 
 # Core displays
-show_weather,0
+show_weather,1
 show_forecast,0
 show_events,1
 show_stocks,1
@@ -16,14 +16,11 @@ show_scheduled_displays,0
 show_events_in_between_schedules,1
 night_mode_minimal_display,1
 
-
-
 # Safety features
 delayed_start,0
 stocks_respect_market_hours,1
-# transit_respect_commute_hours: 1 = only show during commute hours (9-11am), 0 = always show (for testing)
 transit_respect_commute_hours,0
 
 # Display frequency = number of cycles before next set of stock prices is shown
 stocks_display_frequency,3
-transit_display_frequency,2
+transit_display_frequency,0
