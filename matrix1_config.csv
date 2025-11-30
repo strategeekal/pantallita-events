@@ -22,4 +22,4 @@ stocks_respect_market_hours,0
 transit_respect_commute_hours,0
 
 # Display frequency = number of cycles before next set of stock prices is shown
-stocks_display_frequency,3
+stocks_display_frequency,1
