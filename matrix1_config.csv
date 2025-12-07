@@ -18,7 +18,7 @@ night_mode_minimal_display,1
 
 # Safety features
 delayed_start,0
-stocks_respect_market_hours,1
+stocks_respect_market_hours,0
 transit_respect_commute_hours,0
 
 # Display frequency = number of cycles before next set of stock prices is shown
