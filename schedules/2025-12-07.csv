@@ -4,7 +4,7 @@
 # progressbar: 1=true, 0=false
 Get Dressed,1,6,8,30,8,45,get_dressed.bmp,1
 Eat Breakfast,1,6,7,15,7,40,breakfast.bmp,1
-Gymnastics,1,6,11,0,11,30,gimnastics.bmp,1
+Gymnastics,1,6,12,0,12,30,gimnastics.bmp,1
 Quiet Time,1,6,12,30,13,30,quiet_time.bmp,1
 Eat Dinner,1,6,18,30,19,0,dinner.bmp,1
 Bath Time,1,6,19,0,19,30,bath_time.bmp,1
