@@ -14,13 +14,13 @@ show_transit,1
 show_weekday_indicator,1
 show_scheduled_displays,0
 show_events_in_between_schedules,1
-night_mode_minimal_display,1
-
-# Safety features
-delayed_start,0
 stocks_respect_market_hours,0
+stocks_display_grace_period_minutes,60
 transit_respect_commute_hours,0
+night_mode_minimal_display,1
 
 # Display frequency = number of cycles before next set of stock prices is shown
 stocks_display_frequency,1
-stocks_display_grace_period_minutes,60
+
+# Safety features
+delayed_start,0
