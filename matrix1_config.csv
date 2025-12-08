@@ -16,7 +16,7 @@ show_scheduled_displays,0
 show_events_in_between_schedules,1
 stocks_respect_market_hours,0
 stocks_display_grace_period_minutes,180
-transit_respect_commute_hours,0
+transit_respect_commute_hours,1
 night_mode_minimal_display,1
 
 # Display frequency = number of cycles before next set of stock prices is shown
