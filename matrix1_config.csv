@@ -7,14 +7,14 @@
 show_weather,1
 show_forecast,1
 show_events,1
-show_stocks,1
+show_stocks,0
 show_transit,1
 
 # Display elements
 show_weekday_indicator,1
-show_scheduled_displays,0
+show_scheduled_displays,1
 show_events_in_between_schedules,1
-stocks_respect_market_hours,0
+stocks_respect_market_hours,1
 stocks_display_grace_period_minutes,90
 transit_respect_commute_hours,1
 night_mode_minimal_display,1
@@ -23,4 +23,4 @@ night_mode_minimal_display,1
 stocks_display_frequency,1
 
 # Safety features
-delayed_start,0
+delayed_start,1
