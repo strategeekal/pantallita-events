@@ -1,0 +1,18 @@
+# Pantallita 3.0 - Display Configuration
+# This file controls which displays are shown and temperature units
+# Edit values and save - changes apply on next cycle
+#
+# GitHub Remote Config:
+# - Configure CONFIG_GITHUB_URL in settings.toml to enable remote control
+# - GitHub config will override this local file
+# - If GitHub fetch fails, local config is used as fallback
+
+setting,value
+
+# Display toggles (true/false)
+display_weather,true
+display_forecast,true
+display_clock,false
+
+# Temperature unit (F or C)
+temperature_unit,F
