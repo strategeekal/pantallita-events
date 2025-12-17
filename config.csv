@@ -10,7 +10,7 @@
 setting,value
 
 # Display toggles (true/false)
-display_weather,true
+display_weather,false
 display_forecast,true
 display_stocks,true
 display_clock,false
