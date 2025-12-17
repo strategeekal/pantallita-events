@@ -11,8 +11,8 @@ setting,value
 
 # Display toggles (true/false)
 display_weather,true
-display_forecast,true
+display_forecast,false
 display_clock,false
 
 # Temperature unit (F or C)
-temperature_unit,F
+temperature_unit,C
