@@ -10,7 +10,7 @@
 setting,value
 
 # Display toggles (true/false)
-display_weather,true
+display_weather,false
 display_forecast,true
 display_stocks,true
 display_clock,false
@@ -19,6 +19,6 @@ display_clock,false
 temperature_unit,C
 
 # Stock display settings
-stocks_display_frequency,3
-stocks_respect_market_hours,true
+stocks_display_frequency,1
+stocks_respect_market_hours,false
 stocks_grace_period_minutes,30
