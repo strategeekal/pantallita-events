@@ -20,5 +20,5 @@ temperature_unit,C
 
 # Stock display settings
 stocks_display_frequency,3
-stocks_respect_market_hours,false
+stocks_respect_market_hours,true
 stocks_grace_period_minutes,30
