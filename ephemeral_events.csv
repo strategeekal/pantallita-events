@@ -2,7 +2,6 @@
 # TopLine = displays on TOP of screen
 # BottomLine = displays on BOTTOM (usually the name)
 # Times are optional (24-hour format, 0-23). If omitted, event shows all day.
-2025-12-28,H. Prog.,All Week,guidepost_logo.bmp,LILAC
 2026-01-18,No School,Tmrw,no_school.bmp,PURPLE,20,23
 2026-01-19,No School,Today,no_school.bmp,PURPLE,5,18
 2026-02-15,H. Prog.,Tmrw,guidepost_logo.bmp,LILAC
