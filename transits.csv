@@ -1,0 +1,46 @@
+# Transit Routes Configuration
+# Format: type,route,label,stops,min_time,color,commute_hours,days,color2
+#
+# type: train or bus
+# route: CTA route identifier (e.g., "Red" for Red Line, "22" for Bus 22)
+# label: Short display name (max 9 chars, e.g., "RedToLoop", "Bus22Nrth")
+# stops: Pipe-separated stop IDs (map IDs for trains, stop IDs for buses)
+#        Multiple stops = "any of these stations" (shows earliest arrival)
+# min_time: Minimum minutes to display (hide arrivals closer than this)
+# color: Display color name (e.g., RED, BLUE, ORANGE, etc.)
+# commute_hours: Pipe-separated time ranges in 24h format (e.g., "6-9|16-19")
+#                Shows only during these hours. Omit or use empty string for always show.
+# days: Day filter - "weekday" (Mon-Fri), "weekend" (Sat-Sun), "all" or empty (every day)
+#       Can also use specific days as numbers: "0,1,2" (0=Monday, 6=Sunday)
+# color2: Optional second color for split rectangle (e.g., PURPLE for Brown/Purple line)
+#
+# Example configurations:
+# train,Red,RedToLoop,40900|41380,3,RED,6-9|16-19,weekday,
+# bus,22,Bus22Nrth,1234,5,ORANGE,6-9|16-19,weekday,
+# bus,22,Bus22Wknd,1234,5,ORANGE,,weekend,
+# train,Brn,Loop,40530,3,BROWN,6-10,weekday,PURPLE  # Brown/Purple split color
+#
+# Multiple stops example (Red Line northbound from either Howard or Jarvis):
+# train,Red,RedNorth,40900|40100,3,RED,,all,
+#
+# Notes:
+# - Times use 24-hour format (0-23)
+# - End hour is EXCLUSIVE (6-9 means 6:00-8:59)
+# - Empty commute_hours shows route all day
+# - Empty or "all" for days shows route every day
+# - Empty color2 = single color rectangle (4×6 pixels)
+# - color2 specified = split rectangle (2px left color, 2px right color2)
+# - min_time prevents "Train arriving in 1 min" clutter when you can't make it
+
+# EXAMPLE ROUTES - Replace with your actual CTA routes
+# Uncomment and customize these examples:
+
+# Red Line southbound from Fullerton Station (41220) - morning commute weekdays only
+train,Red,96St,41220,10,RED,6-10,weekday,
+
+# Brown/Purple Lines to Loop from Diversey Station (40530) - morning commute weekdays only
+# Shows split brown/purple rectangle since both lines share the route
+train,Brn,Loop,40530,10,BROWN,6-10,weekday,PURPLE
+
+# Bus 8 southbound at stop 5768 - morning commute weekdays only
+bus,8,79st,5768,3,AQUA,6-10,weekday,
