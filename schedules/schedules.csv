@@ -1,0 +1,28 @@
+# Format: name,enabled,days,start_hour,start_min,end_hour,end_min,image,progressbar,night_mode
+# enabled: 1=true, 0=false
+# days: 0-6 for Mon-Sun (e.g., "01234" = Mon-Fri, "5" = Saturday only)
+# progressbar: 1=true, 0=false
+# night_mode: 0=normal (icon+temp+UV), 1=temp only (no icon/UV), 2=clock only (no fetch)
+
+Night Mode AM,1,0123456,0,0,1,30,night_mode.bmp,0,1
+Deep Night AM,1,0123456,1,30,5,30,night_mode.bmp,0,2
+Night Mode end AM,1,0123456,5,30,6,30,night_mode.bmp,0,1
+
+Get Dressed,1,0123456,7,0,7,15,get_dressed.bmp,1,0
+Eat Breakfast,1,0123456,7,15,7,40,breakfast.bmp,1,0
+Toilet and Teeth AM,1,0123456,7,40,7,50,toilet_and_teeth.bmp,1,0
+Go to School,1,01234,7,50,8,15,go_to_school.bmp,1,0
+
+Quiet Time SAT,1,5,12,30,13,30,quiet_time.bmp,1,0
+
+Gimnastics,1,6,11,40,12,10,gimnastics.bmp,1,0
+Quiet Time SUN,1,6,14,00,15,00,quiet_time.bmp,1,0
+
+Eat Dinner,1,0123456,18,30,19,0,dinner.bmp,1,0
+Bath Time,1,0123456,19,0,19,30,bath_time.bmp,1,0
+Pajamas On,1,0123456,19,30,19,40,get_dressed_night.bmp,1,0
+Toilet and Teeth PM,1,0123456,19,40,19,50,toilet_and_teeth.bmp,1,0
+Story and Sleep,1,0123456,19,50,20,5,story_and_bed.bmp,1,0
+Sleep,1,0123456,20,5,20,35,bed.bmp,0,0
+
+Night Mode,1,0123456,22,30,00,00,night_mode.bmp,0,1
