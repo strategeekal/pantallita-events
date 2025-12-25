@@ -1,0 +1,14 @@
+# Format: name,enabled,days,start_hour,start_min,end_hour,end_min,image,progressbar
+# enabled: 1=true, 0=false
+# days: 0-6 for Mon-Sun (e.g., "01234" = Mon-Fri)
+# progressbar: 1=true, 0=false
+Get Dressed,1,3,7,45,8,0,get_dressed.bmp,1
+Eat Breakfast,1,3,8,0,8,30,breakfast.bmp,1
+Toilet and Teeth AM,1,3,8,30,8,40,toilet_and_teeth.bmp,1
+Quiet Time,1,3,13,30,14,30,quiet_time.bmp,1
+Eat Dinner,1,3,18,30,19,0,dinner.bmp,1
+Bath Time,1,3,19,0,19,30,bath_time.bmp,1
+Pajamas On,1,3,19,30,19,40,get_dressed_night.bmp,1
+Toilet and Teeth PM,1,3,19,40,19,50,toilet_and_teeth.bmp,1
+Story and Sleep,1,3,19,50,20,5,story_and_bed.bmp,1
+Sleep,1,3,20,5,20,35,bed.bmp,0
